@@ -917,3 +917,19 @@ Remove the metric (`metric_id`).
   - `i32 (proxy_result_t) call_result`
 
 Call registered foreign function (`function_name_data`, `function_name_size`).
+
+
+## Request tracing:
+
+### `proxy_set_active_span_tag`
+
+* params:
+  - `i32 (const char*) tag_key`
+  - `i32 (size_t) tag_key_size`
+  - `i32 (const char*) tag_value`
+  - `i32 (size_t) tag_value_size`
+* returns:
+  - `i32 (proxy_result_t) call_result`
+
+Sets a tag key (`tag_path_data`, `tag_path_size`) and
+value (`tag_value_data`, `tag_value_size`) in the active span of the request being processed.
