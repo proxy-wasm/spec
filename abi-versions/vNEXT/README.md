@@ -327,8 +327,7 @@ Note: The same unique context identifier (`stream_id`) is shared by a pair of
 Called when HTTP request headers for stream `stream_id` are received from
 downstream.
 
-Headers (`num_headers` entries) can be retrieved using `proxy_get_map` and/or
-`proxy_get_map_value`.
+Headers (`num_headers` entries) can be retrieved using `proxy_get_map_values`.
 
 Return value (`next_action`) instructs the host environment what action to take:
 - `Continue` means that this HTTP request should be accepted and that HTTP
@@ -385,8 +384,7 @@ Return value (`next_action`) instructs the host environment what action to take:
 Called when HTTP request trailers for stream `stream_id` are received from
 downstream.
 
-Trailers (`num_trailers` entries) can be retrieved using `proxy_get_map` and/or
-`proxy_get_map_value`.
+Trailers (`num_trailers` entries) can be retrieved using `proxy_get_map_values`.
 
 Return value (`next_action`) instructs the host environment what action to take:
 - `Continue` means that HTTP trailers should be forwarded upstream.
@@ -409,8 +407,7 @@ Return value (`next_action`) instructs the host environment what action to take:
 Called for each HTTP/2 METADATA frame for stream `stream_id` received from
 downstream.
 
-Metadata (`num_elements` entries) can be retrieved using `proxy_get_map` and/or
-`proxy_get_map_value`.
+Metadata (`num_elements` entries) can be retrieved using `proxy_get_map_values`.
 
 Return value (`next_action`) instructs the host environment what action to take:
 - `Continue` means that HTTP/2 METADATA elements should be forwarded upstream.
@@ -434,8 +431,7 @@ Return value (`next_action`) instructs the host environment what action to take:
 Called when HTTP response headers for stream `stream_id` are received from
 upstream.
 
-Headers (`num_headers` entries) can be retrieved using `proxy_get_map` and/or
-`proxy_get_map_value`.
+Headers (`num_headers` entries) can be retrieved using `proxy_get_map_values`.
 
 Return value (`next_action`) instructs the host environment what action to take:
 - `Continue` means that HTTP headers should be forwarded downstream.
@@ -489,8 +485,7 @@ Return value (`next_action`) instructs the host environment what action to take:
 Called when HTTP response trailers for stream `stream_id` are received from
 upstream.
 
-Trailers (`num_trailers` entries) can be retrieved using `proxy_get_map` and/or
-`proxy_get_map_value`.
+Trailers (`num_trailers` entries) can be retrieved using `proxy_get_map_values`.
 
 Return value (`next_action`) instructs the host environment what action to take:
 - `Continue` means that HTTP trailers should be forwarded downstream.
@@ -513,8 +508,7 @@ Return value (`next_action`) instructs the host environment what action to take:
 Called for each HTTP/2 METADATA frame for stream `stream_id` received from
 upstream.
 
-Metadata (`num_elements` entries) can be retrieved using `proxy_get_map` and/or
-`proxy_get_map_value`.
+Metadata (`num_elements` entries) can be retrieved using `proxy_get_map_values`.
 
 Return value (`next_action`) instructs the host environment what action to take:
 - `Continue` means that HTTP/2 METADATA elements should be forwarded downstream.
@@ -534,9 +528,9 @@ Return value (`next_action`) instructs the host environment what action to take:
   - `i32 (uint32_t) response_code`
   - `i32 (const char*) response_code_details_data`
   - `i32 (size_t) response_code_details_size`
-  - `i32 (const char*) response_body_data`
+  - `i32 (iovec_array_t) response_body_data`
   - `i32 (size_t) response_body_size`
-  - `i32 (const char*) additional_headers_map_data`
+  - `i32 (iovec_array_t[]) additional_headers_map_data`
   - `i32 (size_t) additional_headers_size`
   - `i32 (uint32_t) grpc_status`
 * returns:
@@ -595,14 +589,15 @@ Returns `InvalidOperation` when stream is already closed.
   - `i32 (proxy_buffer_type_t) buffer_type`
   - `i32 (size_t) offset`
   - `i32 (size_t) max_size`
-  - `i32 (const char**) return_buffer_data`
+  - `i32 (iovec_array_t*) return_buffer_data`
   - `i32 (size_t*) return_buffer_size`
 * returns:
   - `i32 (proxy_result_t) call_result`
 
 Returns content of the buffer `buffer_type`. At most `max_size` bytes will be
-returned, starting from the `offset`. Returned bytes are written into provided
-memory slice (`return_buffer_data`, `return_buffer_size`).
+returned, starting from the `offset`. Returned bytes are written into memory
+slices pointed by a list of vectors (`return_buffer_data`,
+`return_buffer_size`).
 
 Returns `Ok` on success.
 
@@ -619,15 +614,16 @@ Returns `InvalidMemoryAccess` when `return_buffer_data` and/or
   - `i32 (proxy_buffer_type_t) buffer_type`
   - `i32 (offset_t) offset`
   - `i32 (size_t) size`
-  - `i32 (const char*) buffer_data`
+  - `i32 (iovec_array_t) buffer_data`
   - `i32 (size_t) buffer_size`
 * returns:
   - `i32 (proxy_result_t) call_result`
 
-Sets content of the buffer `buffer_type` to the provided value (`buffer_data`,
-`buffer_size`), replacing `size` bytes in the existing buffer, starting at the
-`offset`. Host environment must adjust the size of the destination buffer
-(e.g. shrink the buffer if target `size` is larger than `buffer_size`).
+Sets content of the buffer `buffer_type` to the values from memory slices
+pointed by the provided list of vectors (`buffer_data`, `buffer_size`),
+replacing `size` bytes in the existing buffer, starting at the `offset`. Host
+environment must adjust the size of the destination buffer (e.g. shrink the
+buffer if target `size` is larger than `buffer_size`).
 
 Returns `Ok` on success.
 
@@ -636,83 +632,57 @@ Returns `BadArgument` for unknown `buffer_type`.
 Returns `InvalidMemoryAccess` when `buffer_data` and/or `buffer_size` point to
 invalid memory address.
 
-#### `proxy_get_map`
-
-* params:
-  - `i32 (proxy_map_type_t) map_type`
-  - `i32 (const char**) return_map_data`
-  - `i32 (size_t*) return_map_size`
-* returns:
-  - `i32 (proxy_result_t) call_result`
-
-Returns all key-value pairs from the given map (`map_type`).
-
-Returns `Ok` on success.
-
-Returns `BadArgument` for unknown `map_type`.
-
-Returns `Empty` when `map_type` doesn't contain any data.
-
-Returns `InvalidMemoryAccess` when `return_map_data` and/or `return_map_size`
-point to invalid memory address.
-
-#### `proxy_set_map`
-
-* params:
-  - `i32 (proxy_map_type_t) map_type`
-  - `i32 (const char*) map_data`
-  - `i32 (size_t) map_size`
-* returns:
-  - `i32 (proxy_result_t) call_result`
-
-Sets all key-value pairs in the given map (`map_type`).
-
-Returns `Ok` on success.
-
-Returns `BadArgument` for unknown `map_type`.
-
-Returns `InvalidMemoryAccess` when `map_data` and/or `map_size` point to invalid
-memory address.
-
 #### `proxy_get_map_values`
 
 * params:
   - `i32 (proxy_map_type_t) map_type`
-  - `i32 (const char*) key_data`
-  - `i32 (size_t) key_size`
-  - `i32 (const char**) return_values_data`
-  - `i32 (size_t*) return_values_size`
+  - `i32 (iovec_array_t) keys_data`
+  - `i32 (size_t) keys_size`
+  - `i32 (iovec_array_t[]*) return_map_data`
+  - `i32 (size_t*) return_map_size`
 * returns:
   - `i32 (proxy_result_t) call_result`
 
-Returns content of the key (`key_data`, `key_size`) from the map (`map_type`).
+Returns map containing key-values for keys from the provided list of vectors
+(`keys_data`, `keys_size`) from the map (`map_type`) in a list of lists
+of vectors (`return_map_data`, `return_map_size`) in which the first element
+in each list represents a key, followed by a zero or more values.
+
+If the list of keys is empty, then all key-values in the map are returned.
+
+In context of HTTP header maps, the special key `"*"` can be used to retrieve
+all regular HTTP headers, and the special key `":*"` can be used to retrieve
+all pseudo-headers.
 
 Returns `Ok` on success.
 
 Returns `BadArgument` for unknown `map_type`.
-
-Returns `NotFound` when key (`key_data`, `key_size`) doesn't exist.
 
 Returns `InvalidMemoryAccess` when `key_data`, `key_size`, `return_values_data`
 and/or `return_values_size` point to invalid memory address.
 
-#### `proxy_set_map_key_values`
+#### `proxy_set_map_values`
 
 * params:
   - `i32 (proxy_map_type_t) map_type`
-  - `i32 (const char*) key_data`
-  - `i32 (size_t) key_size`
-  - `i32 (const char*) values_data`
-  - `i32 (size_t) values_size`
-  - `i32 (bool) multiple_values`
+  - `i32 (iovec_array_t) remove_keys_data`
+  - `i32 (size_t) remove_keys_size`
+  - `i32 (iovec_array_t[]) map_data`
+  - `i32 (size_t) map_size`
 * returns:
   - `i32 (proxy_result_t) call_result`
 
-Sets content of the key (`key_data`, `key_size`) in the map (`map_type`) to the
-provided values (`values_data`, `values_size`).
+Adds key-values from the provided list of lists of vectors (`map_data`,
+`map_size`) to the given map (`map_type`). The first element in each list
+represents a key, followed by a zero or more values. For the existing keys,
+new values will be added to the existing ones.
 
-If `multiple_values` is `false`, then `values_data`, `values_size` contains
-a single value, otherwise it contains multiple values serialized as a list.
+Keys to remove and/or which values will be replaced can be provided in an
+optional list of vectors (`remove_keys_data`, `remove_keys_size`).
+
+In context of HTTP header maps, the special key `"*"` can be used to remove
+all regular HTTP headers, and the special key `":*"` can be used to remove
+all pseudo-headers.
 
 Returns `Ok` on success.
 
@@ -720,49 +690,6 @@ Returns `BadArgument` for unknown `map_type`.
 
 Returns `InvalidMemoryAccess` when `key_data`, `key_size`, `values_data` and/or
 `values_size` point to invalid memory address.
-
-#### `proxy_add_map_key_values`
-
-* params:
-  - `i32 (proxy_map_type_t) map_type`
-  - `i32 (const char*) key_data`
-  - `i32 (size_t) key_size`
-  - `i32 (const char*) values_data`
-  - `i32 (size_t) values_size`
-  - `i32 (bool) multiple_values`
-* returns:
-  - `i32 (proxy_result_t) call_result`
-
-Adds new values (`values_data`, `values_size`) to the key (`key_data`,
-`key_size`) in the map (`map_type`).
-
-If `multiple_values` is `false`, then `values_data`, `values_size` contains
-a single value, otherwise it contains multiple values serialized as a list.
-
-Returns `Ok` on success.
-
-Returns `BadArgument` for unknown `map_type`.
-
-Returns `InvalidMemoryAccess` when `key_data`, `key_size`, `values_data` and/or
-`values_size` point to invalid memory address.
-
-#### `proxy_remove_map_key`
-
-* params:
-  - `i32 (proxy_map_type_t) map_type`
-  - `i32 (const char*) key_data`
-  - `i32 (size_t) key_size`
-* returns:
-  - `i32 (proxy_result_t) call_result`
-
-Removes the key (`key_data`, `key_size`) from the map (`map_type`).
-
-Returns `Ok` on success.
-
-Returns `BadArgument` for unknown `map_type`.
-
-Returns `InvalidMemoryAccess` when `key_data` and/or `key_size` point to invalid
-memory address.
 
 
 ## Shared key-value store
@@ -804,7 +731,7 @@ and/or `return_kvstore_id` point to invalid memory address.
   - `i32 (uint32_t) kvstore_id`
   - `i32 (const char*) key_data`
   - `i32 (size_t) key_size`
-  - `i32 (const char**) return_values_data`
+  - `i32 (iovec_array_t*) return_values_data`
   - `i32 (size_t*) return_values_size`
   - `i32 (uint32_t*) return_cas`
 * returns:
@@ -831,18 +758,14 @@ Returns `InvalidMemoryAccess` when `key_data`, `key_size`, `return_values_data`,
   - `i32 (uint32_t) kvstore_id`
   - `i32 (const char*) key_data`
   - `i32 (size_t) key_size`
-  - `i32 (const char*) values_data`
+  - `i32 (iovec_array_t) values_data`
   - `i32 (size_t) values_size`
-  - `i32 (bool) multiple_values`
   - `i32 (uint32_t) cas`
 * returns:
   - `i32 (proxy_result_t) call_result`
 
 Sets the values of the key (`key_data`, `key_size`) in a shared key-value store
 (`kvstore_id`) to the values (`values_data`, `values_size`).
-
-If `multiple_values` is `false`, then `values_data`, `values_size` contains
-a single value, otherwise it contains multiple values serialized as a list.
 
 If compare-and-switch value (`cas`) is provided and non-zero, then it must match
 the current value in order for update to succeed.
@@ -863,18 +786,14 @@ Returns `InvalidMemoryAccess` when `key_data`, `key_size`, `values_data` and/or
   - `i32 (uint32_t) kvstore_id`
   - `i32 (const char*) key_data`
   - `i32 (size_t) key_size`
-  - `i32 (const char*) values_data`
+  - `i32 (iovec_array_t) values_data`
   - `i32 (size_t) values_size`
-  - `i32 (bool) multiple_values`
   - `i32 (uint32_t) cas`
 * returns:
   - `i32 (proxy_result_t) call_result`
 
 Adds new values (`values_data`, `values_size`) to the key (`key_data`,
 `key_size`) in a shared key-value store (`kvstore_id`).
-
-If `multiple_values` is `false`, then `values_data`, `values_size` contains
-a single value, otherwise it contains multiple values serialized as a list.
 
 If compare-and-switch value (`cas`) is provided and non-zero, then it must match
 the current value in order for update to succeed.
@@ -965,7 +884,7 @@ Returns `InvalidMemoryAccess` when `queue_name_data`, `queue_name_size` and/or
 
 * params:
   - `i32 (uint32_t) queue_id`
-  - `i32 (const char**) return_payload_data`
+  - `i32 (iovec_array_t*) return_payload_data`
   - `i32 (size_t*) return_payload_size`
 * returns:
   - `i32 (proxy_result_t) call_result`
@@ -984,7 +903,7 @@ Returns `InvalidMemoryAccess` when `return_payload_data` and/or
 
 * params:
   - `i32 (uint32_t) queue_id`
-  - `i32 (const char*) payload_data`
+  - `i32 (iovec_array_t) payload_data`
   - `i32 (size_t) payload_size`
 * returns:
   - `i32 (proxy_result_t) call_result`
@@ -1172,11 +1091,11 @@ Returns `BadArgument` when the metric (`metric_id`) doesn't exist.
 * params:
   - `i32 (const char*) upstream_name_data`
   - `i32 (size_t) upstream_name_size`
-  - `i32 (const char*) headers_map_data`
+  - `i32 (iovec_array_t[]) headers_map_data`
   - `i32 (size_t) headers_map_size`
-  - `i32 (const char*) body_data`
+  - `i32 (iovec_array_t) body_data`
   - `i32 (size_t) body_size`
-  - `i32 (const char*) trailers_map_data`
+  - `i32 (iovec_array_t[]) trailers_map_data`
   - `i32 (size_t) trailers_map_size`
   - `i32 (uint32_t) timeout_milliseconds`
   - `i32 (uint32_t*) return_callout_id`
@@ -1214,7 +1133,7 @@ invalid memory address.
 Called when the complete response to the HTTP call (`callout_id`) is received.
 
 Headers (`num_headers` entries) and trailers (`num_trailers` entries) can be
-retrieved using `proxy_get_map` and/or `proxy_get_map_value`.
+retrieved using `proxy_get_map_values`.
 
 Response body (of size `body_size`) can be retrieved using `proxy_get_buffer`.
 
@@ -1232,9 +1151,9 @@ Response body (of size `body_size`) can be retrieved using `proxy_get_buffer`.
   - `i32 (size_t) service_name_size`
   - `i32 (const char*) method_data`
   - `i32 (size_t) method_size`
-  - `i32 (const char*) initial_metadata_map_data`
+  - `i32 (iovec_array_t[]) initial_metadata_map_data`
   - `i32 (size_t) initial_metadata_map_size`
-  - `i32 (const char*) grpc_message_data`
+  - `i32 (iovec_array_t) grpc_message_data`
   - `i32 (size_t) grpc_message_size`
   - `i32 (uint32_t) timeout_milliseconds`
   - `i32 (uint32_t*) return_callout_id`
@@ -1270,7 +1189,7 @@ Returns `InvalidMemoryAccess` when `grpc_service_data`, `grpc_service_size`,
   - `i32 (size_t) service_name_size`
   - `i32 (const char*) method_data`
   - `i32 (size_t) method_size`
-  - `i32 (const char*) initial_metadata_map_data`
+  - `i32 (iovec_array_t[]) initial_metadata_map_data`
   - `i32 (size_t) initial_metadata_map_size`
   - `i32 (uint32_t*) return_callout_id`
 * returns:
@@ -1294,7 +1213,7 @@ Returns `InvalidMemoryAccess` when `grpc_service_data`, `grpc_service_size`,
 
 * params:
   - `i32 (uint32_t) callout_id`
-  - `i32 (const char*) grpc_message_data`
+  - `i32 (iovec_array_t) grpc_message_data`
   - `i32 (size_t) grpc_message_size`
 * returns:
   - `i32 (proxy_result_t) call_result`
@@ -1341,15 +1260,15 @@ Returns `BadArgument` when the gRPC call (`callout_id`) doesn't exist.
 
 * params:
   - `i32 (uint32_t) callout_id`
-  - `i32 (size_t) num_elements`
+  - `i32 (size_t) num_headers`
 * returns:
   - none
 
 Called when header metadata in the response to the gRPC call (`callout_id`) is
 received.
 
-Header metadata (`num_headers` entries) can be retrieved using `proxy_get_map`
-and/or `proxy_get_map_value`.
+Header metadata (`num_headers` entries) can be retrieved using
+`proxy_get_map_values`.
 
 #### `proxy_on_grpc_call_response_message`
 
@@ -1369,15 +1288,15 @@ Content of the gRPC message (of size `data_size`) can be retrieved using
 
 * params:
   - `i32 (uint32_t) callout_id`
-  - `i32 (size_t) num_elements`
+  - `i32 (size_t) num_trailers`
 * returns:
   - none
 
 Called when trailer metadata in the response to the gRPC call (`callout_id`) is
 received.
 
-Trailer metadata (`num_headers` entries) can be retrieved using `proxy_get_map`
-and/or `proxy_get_map_value`.
+Trailer metadata (`num_trailers` entries) can be retrieved using
+`proxy_get_map_values`.
 
 #### `proxy_on_grpc_call_close`
 
@@ -1417,9 +1336,9 @@ custom callback. Returning `0` indicates unknown `custom_callback_id`.
 
 * params:
   - `i32 (uint32_t) custom_function_id`
-  - `i32 (const char *) parameters_data`
+  - `i32 (iovec_array_t) parameters_data`
   - `i32 (size_t) parameters_size`
-  - `i32 (const char**) return_results_data`
+  - `i32 (iovec_array_t*) return_results_data`
   - `i32 (size_t*) return_results_size`
 * returns:
   - `i32 (proxy_result_t) call_result`
@@ -1440,23 +1359,35 @@ address.
 
 The encoding of integers is little endian.
 
-### List of values.
+### Vector (`iovec_t`)
 
-List of values is serialized as: 32-bit number of elements in the list,
-followed by a series of 32-bit lengths of each value, followed by a series of
-payload of each value.
+A vector is represented by a pair of 32-bit integers. First number points to the
+address in memory where the value's data starts at, second number represents its
+length.
 
-e.g. `{"a", "b"}` is serialized as: `{ 0x2, 0x1, 0x1, "a", "b" }`.
+e.g. vector pointing to `"one"` would be represented by `{0xAA, 0x03}`, assuming
+that `"one"` starts at address `0xAA`.
 
-### Map with multiple values.
+### List of vectors (`iovec_array_t`)
 
-Map with multiple values is serialized as: 32-bit number of keys in the map,
-followed by a series of pairs of 32-bit lengths of each key and its serialized
-list of values, followed by a series of key names and its serialized list of
-values.
+A list of vectors is serialized as a continuous list of `iovec_t` elements.
 
-e.g. `{"key": {"a", "b"}}` is serialized as:
-`{ 0x1, 0x3, 0x5, "k", "e", "y", 0x2, 0x1, 0x1, "a", "b" }`.
+e.g. a list of 2 vectors pointing to `{"one", "two"}` would be serialized as
+`{{0xAA, 0x03}, {0xBB, 0x03}}`, assuming that `"one"` starts at address `0xAA`,
+and `"two"` starts at address `0xBB`.
+
+### List of lists of vectors (`iovec_array_t[]`)
+
+A list of lists of vectors is serialized as a continuous list of
+`iovec_array_t`, where each top-level vector points to a list of vectors.
+
+e.g. a list of lists of vectors pointing to `{{"key", "a", "b"}, {"empty"}}`
+would be serialized as `{{0xEE, 0x03}, {0xFF, 0x01}}`, where `0xEE` contains
+`{{0xCC, 0x03}, {0xAA, 0x01}, {0xBB, 0x01}}`, which represents a list of 3
+vectors: `"key"`, `"a"`, `"b"`, assuming that `"key"` starts at address `0xCC`,
+`"a"` starts at address `0xAA`, and `"b"` starts at address `0xBB`, and `0xFF`
+contains `{{0xDD, 0x05}}`, which represents a list of 1 vector: `"empty"`,
+assuming that `"empty"` starts at address `0xDD`.
 
 
 # Built-in types
