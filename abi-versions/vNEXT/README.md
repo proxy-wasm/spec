@@ -1145,12 +1145,12 @@ Response body (of size `body_size`) can be retrieved using `proxy_get_buffer`.
 #### `proxy_dispatch_grpc_call`
 
 * params:
-  - `i32 (const char*) grpc_service_data`
-  - `i32 (size_t) grpc_service_size`
+  - `i32 (const char*) upstream_name_data`
+  - `i32 (size_t) upstream_name_size`
   - `i32 (const char*) service_name_data`
   - `i32 (size_t) service_name_size`
-  - `i32 (const char*) method_data`
-  - `i32 (size_t) method_size`
+  - `i32 (const char*) service_method_data`
+  - `i32 (size_t) service_method_size`
   - `i32 (iovec_array_t[]) initial_metadata_map_data`
   - `i32 (size_t) initial_metadata_map_size`
   - `i32 (iovec_array_t) grpc_message_data`
@@ -1160,7 +1160,8 @@ Response body (of size `body_size`) can be retrieved using `proxy_get_buffer`.
 * returns:
   - `i32 (proxy_result_t) call_result`
 
-Dispatch a gRPC call to a service (`service_name_data`, `service_name_size`).
+Dispatch a call to a gRPC service (`service_name_data`, `service_name_size`)
+using upstream (`upstream_name_data`, `upstream_name_size`).
 
 Once the response is returned to the host, `proxy_on_grpc_call_response` and/or
 `proxy_on_grpc_call_close` will be called with an unique call identifier
@@ -1183,19 +1184,20 @@ Returns `InvalidMemoryAccess` when `grpc_service_data`, `grpc_service_size`,
 #### `proxy_open_grpc_stream`
 
 * params:
-  - `i32 (const char*) grpc_service_data`
-  - `i32 (size_t) grpc_service_size`
+  - `i32 (const char*) upstream_name_data`
+  - `i32 (size_t) upstream_name_size`
   - `i32 (const char*) service_name_data`
   - `i32 (size_t) service_name_size`
-  - `i32 (const char*) method_data`
-  - `i32 (size_t) method_size`
+  - `i32 (const char*) service_method_data`
+  - `i32 (size_t) service_method_size`
   - `i32 (iovec_array_t[]) initial_metadata_map_data`
   - `i32 (size_t) initial_metadata_map_size`
   - `i32 (uint32_t*) return_callout_id`
 * returns:
   - `i32 (proxy_result_t) call_result`
 
-Opens connection to the gRPC service (`service_name_data`, `service_name_size`).
+Opens connection to a gRPC service (`service_name_data`, `service_name_size`)
+using upstream (`upstream_name_data`, `upstream_name_size`).
 
 Returns `Ok` on success.
 
