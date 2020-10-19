@@ -18,11 +18,9 @@ Proxy-Wasm extensions across different proxies.
 ### SDKs
 
 * [C++]
-
 * [Rust]
-
 * [AssemblyScript]
-
+* [TinyGo]
 
 [WebAssembly in Envoy]: docs/WebAssembly-in-Envoy.md
 [Envoy / Istio Proxy]: https://github.com/envoyproxy/envoy-wasm
@@ -30,3 +28,4 @@ Proxy-Wasm extensions across different proxies.
 [C++]: https://github.com/proxy-wasm/proxy-wasm-cpp-sdk
 [Rust]: https://github.com/proxy-wasm/proxy-wasm-rust-sdk
 [AssemblyScript]: https://github.com/solo-io/proxy-runtime
+[TinyGo]: https://github.com/tetratelabs/proxy-wasm-go-sdk
