@@ -23,7 +23,7 @@ Proxy-Wasm extensions across different proxies.
 * [TinyGo]
 
 [WebAssembly in Envoy]: docs/WebAssembly-in-Envoy.md
-[Envoy / Istio Proxy]: https://github.com/envoyproxy/envoy-wasm
+[Envoy / Istio Proxy]: https://github.com/envoyproxy/envoy
 [ATS]: https://github.com/jplevyak/trafficserver/tree/wasm
 [C++]: https://github.com/proxy-wasm/proxy-wasm-cpp-sdk
 [Rust]: https://github.com/proxy-wasm/proxy-wasm-rust-sdk
