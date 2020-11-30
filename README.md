@@ -1,6 +1,6 @@
 # WebAssembly for Proxies (ABI specification)
 
-This repositarty contains specification of the low-level Application Binary Interface (ABI) and
+This repository contains specification of the low-level Application Binary Interface (ABI) and
 conventions to use between L4/L7 proxies (and/or other host environments) and their extensions
 delivered as WebAssembly modules.
 
