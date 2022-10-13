@@ -33,13 +33,13 @@ Proxy-Wasm extensions across different proxies.
 * [Envoy]
 * [Istio Proxy] (Envoy-based)
 * [MOSN]
-* [ATS]
+* [ATS] (work-in-progress)
 * [OpenResty] (work-in-progress)
 
 [Envoy]: https://github.com/envoyproxy/envoy
 [Istio Proxy]: https://github.com/istio/proxy
 [MOSN]: https://github.com/mosn/mosn
-[ATS]: https://github.com/apache/trafficserver/tree/master/plugins/experimental/wasm
+[ATS]: https://docs.trafficserver.apache.org/en/latest/admin-guide/plugins/wasm.en.html
 [OpenResty]: https://github.com/api7/wasm-nginx-module
 
 #### Libraries
