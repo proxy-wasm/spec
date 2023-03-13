@@ -397,6 +397,18 @@ memory pointers passed in as arguments (indicated by the `return_` prefix in the
 
 Log message (`message_data`, `message_size`) at the given `log_level`.
 
+### `proxy_log_destination`
+
+* params:
+  - `i32 (const char*) log_destination_data`
+  - `i32 (size_t) log_destination_size`
+  - `i32 (proxy_log_level_t) log_level`
+  - `i32 (const char*) message_data`
+  - `i32 (size_t) message_size`
+* returns:
+  - `i32 (proxy_result_t) call_result`
+
+Log message (`message_data`, `message_size`) at the given `log_level` to the log destination (`log_destination_data`, `log_destination_size`).
 
 ### `proxy_get_current_time`
 
