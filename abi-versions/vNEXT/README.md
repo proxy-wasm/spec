@@ -435,7 +435,7 @@ used after returning `false` in `proxy_on_done`.
 
 ## Timers
 
-### `proxy_set_tick_period`
+### `proxy_set_tick_period_milliseconds`
 
 * params:
   - `i32 (uint32_t) tick_period`
