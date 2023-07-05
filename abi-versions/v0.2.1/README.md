@@ -78,6 +78,8 @@ Called when the Wasm module is first loaded, after [`_initialize`].
 Called when the Wasm module is first loaded.
 
 
+## Memory management
+
 ### `proxy_on_memory_allocate`
 
 * params:
