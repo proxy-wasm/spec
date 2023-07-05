@@ -104,7 +104,8 @@ Returning `0` indicates failure.
   - `i32 (uint8_t *) memory_data`
 
 > **Warning**
-> This is called only in the absence of [`proxy_on_memory_allocate`].
+> This callback has been deprecated in favor of [`proxy_on_memory_allocate`],
+> and it's called only in its absence.
 
 Called to allocate continuous memory buffer of `memory_size` using
 the in-VM memory allocator.
