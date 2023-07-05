@@ -20,6 +20,8 @@ which can be used to distinguish between different contexts.
 
 ### Functions exposed by the host environment
 
+All functions exposed by the host are required.
+
 All Proxy-Wasm functions exposed by the host return [`proxy_status_t`],
 which indicates status of the call (success, invalid memory access,
 etc.). Return values are written into memory pointed by `return_<value>`
