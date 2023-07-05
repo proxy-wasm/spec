@@ -18,7 +18,7 @@ functions, include a unique context identifier as the first parameter,
 which can be used to distinguish between different contexts.
 
 
-### Functions exposed by the host environment
+### Functions exposed by the host
 
 All functions exposed by the host are required.
 
@@ -30,7 +30,9 @@ parameters.
 
 ## Integration
 
-### `proxy_abi_version_0_2_1`
+### Callbacks exposed by the Wasm module
+
+#### `proxy_abi_version_0_2_1`
 
 * params:
   - none
@@ -43,7 +45,7 @@ Proxy-Wasm ABI v0.2.1.
 This function is never called.
 
 
-### `_initialize`
+#### `_initialize`
 
 * params:
   - none
@@ -53,7 +55,7 @@ This function is never called.
 Called when the Wasm module is first loaded.
 
 
-### `main`
+#### `main`
 
 * params:
   - `i32 (uint32_t) ignored`
@@ -67,7 +69,7 @@ Called when the Wasm module is first loaded.
 Called when the Wasm module is first loaded, after [`_initialize`].
 
 
-### `_start`
+#### `_start`
 
 * params:
   - none
@@ -82,7 +84,9 @@ Called when the Wasm module is first loaded.
 
 ## Memory management
 
-### `proxy_on_memory_allocate`
+### Callbacks exposed by the Wasm module
+
+#### `proxy_on_memory_allocate`
 
 * params:
   - `i32 (size_t) memory_size`
@@ -98,7 +102,7 @@ memory.
 Returning `0` indicates failure.
 
 
-### `malloc`
+#### `malloc`
 
 * params:
   - `i32 (size_t) memory_size`
@@ -120,7 +124,9 @@ Returning `0` indicates failure.
 
 ## Context lifecycle
 
-### `proxy_on_context_create`
+### Callbacks exposed by the Wasm module
+
+#### `proxy_on_context_create`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -134,7 +140,7 @@ When `parent_context_id` is `0` then a new plugin ("root") context
 is created, otherwise a new per-stream context is created.
 
 
-### `proxy_on_done`
+#### `proxy_on_done`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -150,7 +156,7 @@ Plugin must return one of the following values:
   allow the host to finalize and delete that context.
 
 
-### `proxy_on_log`
+#### `proxy_on_log`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -163,7 +169,7 @@ releasing its state.
 This callback can be used for generating final log entries.
 
 
-### `proxy_on_delete`
+#### `proxy_on_delete`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -176,7 +182,9 @@ This is used to signal that the plugin should stop tracking active
 context and remove all associated state.
 
 
-### `proxy_done`
+### Functions exposed by the host
+
+#### `proxy_done`
 
 * params:
   - none
@@ -193,7 +201,7 @@ Returned `status` value is:
 - `NOT_FOUND` when active context was not pending finalization.
 
 
-### `proxy_set_effective_context`
+#### `proxy_set_effective_context`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -213,7 +221,9 @@ Returned `status` value is:
 
 ## Configuration
 
-### `proxy_on_vm_start`
+### Callbacks exposed by the Wasm module
+
+#### `proxy_on_vm_start`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -231,7 +241,7 @@ Plugin must return one of the following values:
 - `false` to indicate that the configuration processing failed.
 
 
-### `proxy_on_configure`
+#### `proxy_on_configure`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -252,7 +262,9 @@ Plugin must return one of the following values:
 
 ## Logging
 
-### `proxy_log`
+### Functions exposed by the host
+
+#### `proxy_log`
 
 * params:
   - `i32 (`[`proxy_log_level_t`]`) log_level`
@@ -270,7 +282,7 @@ Returned `status` value is:
   point to invalid memory address.
 
 
-### `wasi_snapshot_preview1.fd_write`
+#### `wasi_snapshot_preview1.fd_write`
 
 * params:
   - `i32 (`[`wasi_fd_id_t`]`) fd_id`
@@ -295,7 +307,7 @@ Returned `errno` value is:
   point to invalid memory address.
 
 
-### `proxy_get_log_level`
+#### `proxy_get_log_level`
 
 * params:
   - `i32 (`[`proxy_log_level_t`]` *) return_log_level`
@@ -315,7 +327,9 @@ Returned `status` value is:
 
 ## Clocks
 
-### `proxy_get_current_time_nanoseconds`
+### Functions exposed by the host
+
+#### `proxy_get_current_time_nanoseconds`
 
 * params:
   - `i32 (uint64_t *) return_time`
@@ -339,7 +353,7 @@ Returned `status` value is:
   address.
 
 
-### `wasi_snapshot_preview1.clock_time_get`
+#### `wasi_snapshot_preview1.clock_time_get`
 
 * params:
   - `i32 (`[`wasi_clock_id_t`]`) clock_id`
@@ -363,7 +377,9 @@ Returned `errno` value is:
 
 ## Timers
 
-### `proxy_set_tick_period_milliseconds`
+### Functions exposed by the host
+
+#### `proxy_set_tick_period_milliseconds`
 
 * params:
   - `i32 (uint32_t) tick_period`
@@ -377,7 +393,9 @@ Returned `status` value is:
 - `OK` on success.
 
 
-### `proxy_on_tick`
+### Callbacks exposed by the Wasm module
+
+#### `proxy_on_tick`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -392,7 +410,9 @@ The tick period can be configured using
 
 ## Randomness
 
-### `wasi_snapshot_preview1.random_get`
+### Functions exposed by the host
+
+#### `wasi_snapshot_preview1.random_get`
 
 * params:
   - `i32 (uint8_t *) buffer`
@@ -416,7 +436,9 @@ Returned `errno` value is:
 > Exposing the host's environment variables is highly discouraged.
 
 
-### `wasi_snapshot_preview1.environ_sizes_get`
+### Functions exposed by the host
+
+#### `wasi_snapshot_preview1.environ_sizes_get`
 
 * params:
   - `i32 (size_t *) return_num_elements`
@@ -433,7 +455,7 @@ Returned `errno` value is:
   point to invalid memory address.
 
 
-### `wasi_snapshot_preview1.environ_get`
+#### `wasi_snapshot_preview1.environ_get`
 
 * params:
   - `i32 (uint8_t **) return_array`
@@ -451,7 +473,9 @@ Returned `errno` value is:
 
 ## Buffers
 
-### `proxy_set_buffer_bytes`
+### Functions exposed by the host
+
+#### `proxy_set_buffer_bytes`
 
 * params:
   - `i32 (`[`proxy_buffer_type_t`]`) buffer_id`
@@ -473,7 +497,7 @@ Returned `status` value is:
   point to invalid memory address.
 
 
-### `proxy_get_buffer_bytes`
+#### `proxy_get_buffer_bytes`
 
 * params:
   - `i32 (`[`proxy_buffer_type_t`]`) buffer_id`
@@ -496,7 +520,7 @@ Returned `status` value is:
   `returned_value_size` point to invalid memory address.
 
 
-### `proxy_get_buffer_status`
+#### `proxy_get_buffer_status`
 
 * params:
   - `i32 (`[`proxy_buffer_type_t`]`) buffer_id`
@@ -518,7 +542,9 @@ Returned `status` value is:
 
 ## HTTP fields
 
-### `proxy_get_header_map_size`
+### Functions exposed by the host
+
+#### `proxy_get_header_map_size`
 
 * params:
   - `i32 (`[`proxy_header_map_type_t`]`) map_id`
@@ -536,7 +562,7 @@ Returned `status` value is:
   invalid memory address.
 
 
-### `proxy_get_header_map_pairs`
+#### `proxy_get_header_map_pairs`
 
 * params:
   - `i32 (`[`proxy_header_map_type_t`]`) map_id`
@@ -556,7 +582,7 @@ Returned `status` value is:
   `return_pairs_size` point to invalid memory address.
 
 
-### `proxy_set_header_map_pairs`
+#### `proxy_set_header_map_pairs`
 
 * params:
   - `i32 (`[`proxy_header_map_type_t`]`) map_id`
@@ -576,7 +602,7 @@ Returned `status` value is:
   `pairs_size` point to invalid memory address.
 
 
-### `proxy_get_header_map_value`
+#### `proxy_get_header_map_value`
 
 * params:
   - `i32 (`[`proxy_header_map_type_t`]`) map_id`
@@ -598,7 +624,7 @@ Returned `status` value is:
   invalid memory address.
 
 
-### `proxy_add_header_map_value`
+#### `proxy_add_header_map_value`
 
 * params:
   - `i32 (`[`proxy_header_map_type_t`]`) map_id`
@@ -618,7 +644,7 @@ Returned `status` value is:
   and/or `value_size` point to invalid memory address.
 
 
-### `proxy_replace_header_map_value`
+#### `proxy_replace_header_map_value`
 
 * params:
   - `i32 (`[`proxy_header_map_type_t`]`) map_id`
@@ -638,7 +664,7 @@ Returned `status` value is:
   and/or `value_size` point to invalid memory address.
 
 
-### `proxy_remove_header_map_value`
+#### `proxy_remove_header_map_value`
 
 * params:
   - `i32 (`[`proxy_header_map_type_t`]`) map_id`
@@ -658,7 +684,9 @@ Returned `status` value is:
 
 ## Common stream operations
 
-### `proxy_continue_stream`
+### Functions exposed by the host
+
+#### `proxy_continue_stream`
 
 * params:
   - `i32 (`[`proxy_stream_type_t`]`) stream_type`
@@ -674,7 +702,7 @@ Returned `status` value is:
   is not supported.
 
 
-### `proxy_close_stream`
+#### `proxy_close_stream`
 
 * params:
   - `i32 (`[`proxy_stream_type_t`]`) stream_type`
@@ -694,12 +722,15 @@ Returned `status` value is:
 > `downstream` refers to the connection between client and proxy,
 > `upstream` refers to the connection between proxy and backend.
 
+
+### Callbacks exposed by the Wasm module
+
 > **Note**
 > The same unique `context_id` is shared by a pair of `downstream`
 > and `upstream` connections.
 
 
-### `proxy_on_new_connection`
+#### `proxy_on_new_connection`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -713,7 +744,7 @@ Plugin must return one of the following values:
 - `PAUSE` to pause processing of the new connection.
 
 
-### `proxy_on_downstream_data`
+#### `proxy_on_downstream_data`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -737,7 +768,7 @@ Plugin must return one of the following values:
 - `PAUSE` to pause processing.
 
 
-### `proxy_on_downstream_connection_close`
+#### `proxy_on_downstream_connection_close`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -748,7 +779,7 @@ Plugin must return one of the following values:
 Called when downstream connection is closed.
 
 
-### `proxy_on_upstream_data`
+#### `proxy_on_upstream_data`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -772,7 +803,7 @@ Plugin must return one of the following values:
 - `PAUSE` to pause processing.
 
 
-### `proxy_on_upstream_connection_close`
+#### `proxy_on_upstream_connection_close`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -785,10 +816,12 @@ Called when upstream connection is closed.
 
 ## HTTP
 
+### Callbacks exposed by the Wasm module
+
 > **Note**
 > The same unique `context_id` is shared by HTTP request and response.
 
-### `proxy_on_request_headers`
+#### `proxy_on_request_headers`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -820,7 +853,7 @@ Plugin must return one of the following values:
 - `PAUSE` to pause processing.
 
 
-### `proxy_on_request_body`
+#### `proxy_on_request_body`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -844,7 +877,7 @@ Plugin must return one of the following values:
 - `PAUSE` to pause processing.
 
 
-### `proxy_on_request_trailers`
+#### `proxy_on_request_trailers`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -872,7 +905,7 @@ Plugin must return one of the following values:
 - `PAUSE` to pause processing.
 
 
-### `proxy_on_response_headers`
+#### `proxy_on_response_headers`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -901,7 +934,7 @@ Plugin must return one of the following values:
 - `PAUSE` to pause processing.
 
 
-### `proxy_on_response_body`
+#### `proxy_on_response_body`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -925,7 +958,7 @@ Plugin must return one of the following values:
 - `PAUSE` to pause processing.
 
 
-### `proxy_on_response_trailers`
+#### `proxy_on_response_trailers`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -953,7 +986,9 @@ Plugin must return one of the following values:
 - `PAUSE` to pause processing.
 
 
-### `proxy_send_local_response`
+### Functions exposed by the host
+
+#### `proxy_send_local_response`
 
 * params:
   - `i32 (uint32_t) status_code`
@@ -979,7 +1014,9 @@ Returned `status` value is:
 
 ## HTTP calls
 
-### `proxy_http_call`
+### Functions exposed by the host
+
+#### `proxy_http_call`
 
 * params:
   - `i32 (const char *) upstream_name_data`
@@ -1012,7 +1049,9 @@ Returned `status` value is:
   invalid memory address.
 
 
-### `proxy_on_http_call_response`
+### Callbacks exposed by the Wasm module
+
+#### `proxy_on_http_call_response`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -1042,7 +1081,9 @@ with `map_id` set to `HTTP_CALL_RESPONSE_TRAILERS`.
 
 ## gRPC calls
 
-### `proxy_grpc_call`
+### Functions exposed by the host
+
+#### `proxy_grpc_call`
 
 * params:
   - `i32 (const char *) upstream_data`
@@ -1081,7 +1122,7 @@ Returned `status` value is:
   invalid memory address.
 
 
-### `proxy_grpc_stream`
+#### `proxy_grpc_stream`
 
 * params:
   - `i32 (const char *) upstream_data`
@@ -1120,7 +1161,7 @@ Returned `status` value is:
   and/or `return_stream_id` point to invalid memory address.
 
 
-### `proxy_grpc_send`
+#### `proxy_grpc_send`
 
 * params:
   - `i32 (uint32_t) stream_id`
@@ -1141,7 +1182,7 @@ Returned `status` value is:
   point to invalid memory address.
 
 
-### `proxy_grpc_cancel`
+#### `proxy_grpc_cancel`
 
 * params:
   - `i32 (uint32_t) call_or_stream_id`
@@ -1157,7 +1198,7 @@ Returned `status` value is:
 - `NOT_FOUND` for unknown `call_or_stream_id`.
 
 
-### `proxy_grpc_close`
+#### `proxy_grpc_close`
 
 * params:
   - `i32 (uint32_t) call_or_stream_id`
@@ -1173,7 +1214,7 @@ Returned `status` value is:
 - `NOT_FOUND` for unknown `call_or_stream_id`.
 
 
-### `proxy_get_status`
+#### `proxy_get_status`
 
 * params:
   - `i32 (uint32_t *) return_status_code`
@@ -1192,7 +1233,9 @@ Returned `status` value is:
   point to invalid memory address.
 
 
-### `proxy_on_grpc_receive_initial_metadata`
+### Callbacks exposed by the Wasm module
+
+#### `proxy_on_grpc_receive_initial_metadata`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -1209,7 +1252,7 @@ All `num_elements` elements can be retrieved using
 `GRPC_CALL_INITIAL_METADATA`.
 
 
-### `proxy_on_grpc_receive`
+#### `proxy_on_grpc_receive`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -1224,7 +1267,7 @@ Message (of `message_size`) can be retrieved using
 [`proxy_get_buffer_bytes`] with `buffer_id` set to `GRPC_CALL_MESSAGE`.
 
 
-### `proxy_on_grpc_receive_trailing_metadata`
+#### `proxy_on_grpc_receive_trailing_metadata`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -1241,7 +1284,7 @@ All `num_elements` elements can be retrieved using
 `GRPC_CALL_TRAILING_METADATA`.
 
 
-### `proxy_on_grpc_close`
+#### `proxy_on_grpc_close`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -1257,7 +1300,9 @@ gRPC status message can be retrieved using [`proxy_get_status`].
 
 ## Shared Key-Value Store
 
-### `proxy_set_shared_data`
+### Functions exposed by the host
+
+#### `proxy_set_shared_data`
 
 * params:
   - `i32 (const char *) key_data`
@@ -1282,7 +1327,7 @@ Returned `status` value is:
   `value_size` and/or `cas` point to invalid memory address.
 
 
-### `proxy_get_shared_data`
+#### `proxy_get_shared_data`
 
 * params:
   - `i32 (const char *) key_data`
@@ -1308,7 +1353,9 @@ Returned `status` value is:
 
 ## Shared Queues
 
-### `proxy_register_shared_queue`
+### Functions exposed by the host
+
+#### `proxy_register_shared_queue`
 
 * params:
   - `i32 (const char *) name_data`
@@ -1332,7 +1379,7 @@ Returned `status` value is:
   and/or `return_queue_id` point to invalid memory address.
 
 
-### `proxy_resolve_shared_queue`
+#### `proxy_resolve_shared_queue`
 
 * params:
   - `i32 (const char *) vm_id_data`
@@ -1356,7 +1403,7 @@ Returned `status` value is:
   `name_size` and/or `return_queue_id` point to invalid memory address.
 
 
-### `proxy_enqueue_shared_queue`
+#### `proxy_enqueue_shared_queue`
 
 * params:
   - `i32 (uint32_t) queue_id`
@@ -1374,7 +1421,7 @@ Returned `status` value is:
   to invalid memory address.
 
 
-### `proxy_dequeue_shared_queue`
+#### `proxy_dequeue_shared_queue`
 
 * params:
   - `i32 (uint32_t) queue_id`
@@ -1393,7 +1440,9 @@ Returned `status` value is:
   and/or `return_value_size` point to invalid memory address.
 
 
-### `proxy_on_queue_ready`
+### Callbacks exposed by the Wasm module
+
+#### `proxy_on_queue_ready`
 * params:
   - `i32 (uint32_t) context_id`
   - `i32 (uint32_t) queue_id`
@@ -1405,7 +1454,9 @@ Called when a new item is enqueued on the queue `queue_id`.
 
 ## Metrics
 
-### `proxy_define_metric`
+### Functions exposed by the host
+
+#### `proxy_define_metric`
 
 * params:
   - `i32 (`[`proxy_metric_type_t`]`) metric_type`
@@ -1428,7 +1479,7 @@ Returned `status` value is:
   and/or `return_metric_id` point to invalid memory address.
 
 
-### `proxy_record_metric`
+#### `proxy_record_metric`
 
 * params:
   - `i32 (uint32_t) metric_id`
@@ -1443,7 +1494,7 @@ Returned `status` value is:
 - `NOT_FOUND` when the requested `metric_id` was not found.
 
 
-### `proxy_increment_metric`
+#### `proxy_increment_metric`
 
 * params:
   - `i32 (uint32_t) metric_id`
@@ -1460,7 +1511,7 @@ Returned `status` value is:
   `metric_id` (e.g. trying to decrement counter).
 
 
-### `proxy_get_metric`
+#### `proxy_get_metric`
 
 * params:
   - `i32 (uint32_t) metric_id`
@@ -1482,7 +1533,9 @@ Returned `status` value is:
 > **Warning**
 > Properties are implementation-dependent and not stable.
 
-### `proxy_get_property`
+### Functions exposed by the host
+
+#### `proxy_get_property`
 
 * params:
   - `i32 (const uint8_t *) path_data`
@@ -1501,7 +1554,7 @@ Returned `status` value is:
   memory address.
 
 
-### `proxy_set_property`
+#### `proxy_set_property`
 
 * params:
   - `i32 (const uint8_t *) path_data`
@@ -1520,7 +1573,9 @@ Returned `status` value is:
 
 ## Foreign function interface (FFI)
 
-### `proxy_call_foreign_function`
+### Functions exposed by the host
+
+#### `proxy_call_foreign_function`
 
 * params:
   - `i32 (const char *) name_data`
@@ -1544,7 +1599,9 @@ Returned `status` value is:
   and/or `return_results_size` point to invalid memory address.
 
 
-### `proxy_on_foreign_function`
+### Callbacks exposed by the Wasm module
+
+#### `proxy_on_foreign_function`
 
 * params:
   - `i32 (uint32_t) context_id`
@@ -1566,7 +1623,9 @@ Various unimplemented WASI functions that are expected to be present
 when the Wasm module is compiled for the `wasm32-wasi` target.
 
 
-### `wasi_snapshot_preview1.args_sizes_get`
+### Functions exposed by the host
+
+#### `wasi_snapshot_preview1.args_sizes_get`
 
 * params:
   - `i32 (size_t *) return_argc`
@@ -1583,7 +1642,7 @@ Returned `errno` value is:
   invalid memory address.
 
 
-### `wasi_snapshot_preview1.args_get`
+#### `wasi_snapshot_preview1.args_get`
 
 * params:
   - `i32 (uint8_t **) return_argv`
@@ -1598,7 +1657,7 @@ Returned `errno` value is:
 - `SUCCESS` on success.
 
 
-### `wasi_snapshot_preview1.proc_exit`
+#### `wasi_snapshot_preview1.proc_exit`
 
 * params:
   - `i32 (uint32_t) exit_code`
@@ -1610,7 +1669,7 @@ This function is never called.
 
 # Types
 
-### `proxy_log_level_t`
+#### `proxy_log_level_t`
 
 - `TRACE` = `0`
 - `DEBUG` = `1`
@@ -1620,7 +1679,7 @@ This function is never called.
 - `CRITICAL` = `5`
 
 
-### `proxy_status_t`
+#### `proxy_status_t`
 
 - `OK` = `0`
 - `NOT_FOUND` = `1`
@@ -1634,13 +1693,13 @@ This function is never called.
 - `UNIMPLEMENTED` = `12`
 
 
-### `proxy_action_t`
+#### `proxy_action_t`
 
 - `CONTINUE` = `0`
 - `PAUSE` = `1`
 
 
-### `proxy_buffer_type_t`
+#### `proxy_buffer_type_t`
 
 - `HTTP_REQUEST_BODY` = `0`
 - `HTTP_RESPONSE_BODY` = `1`
@@ -1653,7 +1712,7 @@ This function is never called.
 - `FOREIGN_FUNCTION_ARGUMENTS` = `8`
 
 
-### `proxy_header_map_type_t`
+#### `proxy_header_map_type_t`
 
 - `HTTP_REQUEST_HEADERS` = `0`
 - `HTTP_REQUEST_TRAILERS` = `1`
@@ -1665,14 +1724,14 @@ This function is never called.
 - `HTTP_CALL_RESPONSE_TRAILERS` = `7`
 
 
-### `proxy_peer_type_t`
+#### `proxy_peer_type_t`
 
 - `UNKNOWN` = `0`
 - `LOCAL` = `1`
 - `REMOTE` =`2`
 
 
-### `proxy_stream_type_t`
+#### `proxy_stream_type_t`
 
 - `HTTP_REQUEST` = `0`
 - `HTTP_RESPONSE` = `1`
@@ -1680,14 +1739,14 @@ This function is never called.
 - `UPSTREAM` = `3`
 
 
-### `proxy_metric_type_t`
+#### `proxy_metric_type_t`
 
 - `COUNTER` = `0`
 - `GAUGE` = `1`
 - `HISTOGRAM` = `2`
 
 
-### `wasi_errno_t`
+#### `wasi_errno_t`
 
 - `SUCCESS` = `0`
 - `BADF` = `8`
@@ -1696,13 +1755,13 @@ This function is never called.
 - `NOTSUP` = `58`
 
 
-### `wasi_fd_id_t`
+#### `wasi_fd_id_t`
 
 - `STDOUT` = `1`
 - `STDERR` = `2`
 
 
-### `wasi_clock_id_t`
+#### `wasi_clock_id_t`
 
 - `REALTIME` = `0`
 - `MONOTONIC` = `1`
