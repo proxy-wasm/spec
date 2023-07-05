@@ -13,9 +13,9 @@ Status: **FINAL**
 All callbacks (entry points named `proxy_on_<event>`) are optional,
 and are going to be called only if exposed by the Wasm module.
 
-All callbacks, other than the integration functions, include a unique
-context identifier as the first parameter, which can be used to
-distinguish between different contexts.
+All callbacks, other than the [integration] and [memory management]
+functions, include a unique context identifier as the first parameter,
+which can be used to distinguish between different contexts.
 
 
 ### Functions exposed by the host environment
@@ -1713,6 +1713,9 @@ This function is never called.
 TODO
 
 
+[integration]: #Integration
+[memory management]: #Memory-management
+[serialized]: #Serialization
 
 [`proxy_abi_version_0_2_1`]: #proxy_abi_version_0_2_1
 [`_initialize`]: #_initialize
@@ -1806,5 +1809,3 @@ TODO
 [`wasi_errno_t`]: #wasi_errno_t
 [`wasi_fd_id_t`]: #wasi_fd_id_t
 [`wasi_clock_id_t`]: #wasi_clock_id_t
-
-[serialized]: #Serialization
