@@ -273,7 +273,7 @@ Plugin must return one of the following values:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Logs `message` at the `log_level`.
+Logs message (`message_data`, `message_size`) at the `log_level`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -292,13 +292,11 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`wasi_errno_t`]`) errno`
 
-Logs message passed in `iovec`.
+Logs message (`iovec`, `iovec_size`).
 
-When `fd_id` is `STDOUT`, then the message is going to be logged
-at the `INFO` level.
+When `fd_id` is `STDOUT`, then it's logged at the `INFO` level.
 
-When `fd_id` is `STDERR`, then the message is going to be logged
-at the `ERROR` level.
+When `fd_id` is `STDERR`, then it's logged at the `ERROR` level.
 
 Returned `errno` value is:
 - `SUCCESS` on success.
@@ -486,8 +484,9 @@ Returned `errno` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sets content of the buffer `buffer_id` to the `value`, replacing
-`size` bytes, starting at `offset` in the existing buffer.
+Sets content of the buffer `buffer_id` to the provided value
+(`value_data`, `value_size`) replacing `size` bytes starting
+at `offset` in the existing buffer.
 
 Returned `status` value is:
 - `OK` on success.
@@ -573,7 +572,8 @@ Returned `status` value is:
 
 Retrieves all key-value pairs from the header map `map_id`.
 
-`return_pairs` is [serialized].
+Returned header map (`return_serialized_pairs_data`,
+`return_serialized_pairs_size`) is [serialized].
 
 Returned `status` value is:
 - `OK` on success.
@@ -591,9 +591,8 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sets all key-value pairs in the header map `map_id` to `pairs`.
-
-`pairs` must be [serialized].
+Sets all key-value pairs in the header map `map_id` to the provided
+[serialized] map (`serialized_pairs_data`, `serialized_pairs_size`).
 
 Returned `status` value is:
 - `OK` on success.
@@ -613,7 +612,8 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Retrieves value of the header `key` from the header map `map_id`.
+Retrieves value (`return_value_data`, `return_value_size`) of the header
+key (`key_data`, `key_value`) from the header map `map_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -635,7 +635,8 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Adds `key` with `value` to the header map `map_id`.
+Adds key (`key_data`, `key_size`) with value (`value_data`,
+`value_size`) to the header map `map_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -655,7 +656,8 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Adds or replaces `key`'s value with `value` in the header map `map_id`.
+Adds or replaces key's (`key_data`, `key_value`) value with the provided
+value (`value_data`, `value_size`) in the header map `map_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -673,7 +675,7 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Removes the `key` from the header map `map_id`.
+Removes the key (`key_data`, `key_value`) from the header map `map_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -1032,8 +1034,10 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sends HTTP request with [serialized] `headers`, `body`
-and [serialized] `trailers` to `upstream_name`.
+Sends HTTP request with [serialized] headers (`serialized_headers_data`,
+`serialized_headers_size`), `body`, and [serialized] trailers
+(`serialized_trailers_data`, `serialized_trailers_size`)
+to upstream (`upstream_name_data`, `upstream_name_size`).
 
 [`proxy_on_http_call_response`] will be called with `return_call_id`
 when the response is received by the host, or after the `timeout`.
@@ -1086,8 +1090,8 @@ with `map_id` set to `HTTP_CALL_RESPONSE_TRAILERS`.
 #### `proxy_grpc_call`
 
 * params:
-  - `i32 (const char *) upstream_data`
-  - `i32 (size_t) upstream_size`
+  - `i32 (const char *) upstream_name_data`
+  - `i32 (size_t) upstream_name_size`
   - `i32 (const char *) service_name_data`
   - `i32 (size_t) service_name_size`
   - `i32 (const char *) method_name_data`
@@ -1101,8 +1105,12 @@ with `map_id` set to `HTTP_CALL_RESPONSE_TRAILERS`.
  * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sends gRPC `message` with [serialized] `initial_metadata`
-to gRPC `method_name` on gRPC `service_name` on `upstream`.
+Sends gRPC message (`message_data`, `message_size`) with [serialized]
+initial metadata (`serialized_initial_metadata_data`,
+`serialized_initial_metadata_size`)
+to gRPC method (`method_name_data`, `method_name_size`)
+on gRPC service (`service_name_data`, `service_name_size`)
+on upstream (`upstream_name_data`, `upstream_name_size`).
 
 [`proxy_on_grpc_receive`] or [`proxy_on_grpc_close`] will be called
 with `return_call_id` when the response is received by the host, or
@@ -1125,8 +1133,8 @@ Returned `status` value is:
 #### `proxy_grpc_stream`
 
 * params:
-  - `i32 (const char *) upstream_data`
-  - `i32 (size_t) upstream_size`
+  - `i32 (const char *) upstream_name_data`
+  - `i32 (size_t) upstream_name_size`
   - `i32 (const char *) service_name_data`
   - `i32 (size_t) service_name_size`
   - `i32 (const char *) method_name_data`
@@ -1137,8 +1145,11 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Opens gRPC stream with [serialized] `initial_metadata`
-to gRPC `method_name` on gRPC `service_name` on `upstream`.
+Opens gRPC stream with [serialized] initial metadata
+(`serialized_initial_metadata_data`, `serialized_initial_metadata_size`)
+to gRPC method (`method_name_data`, `method_name_size`)
+on gRPC service (`service_name_data`, `service_name_size`)
+on upstream (`upstream_name_data`, `upstream_name_size`).
 
 gRPC messages can be sent on this stream using [`proxy_grpc_send`]
 with `return_stream_id`.
@@ -1171,8 +1182,8 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sends gRPC `message` on the gRPC stream `stream_id` previously
-established using [`proxy_grpc_stream`].
+Sends gRPC message (`message_data`, `message_size`) on the gRPC stream
+`stream_id` previously established using [`proxy_grpc_stream`].
 
 Returned `status` value is:
 - `OK` on success.
@@ -1313,7 +1324,8 @@ gRPC status message can be retrieved using [`proxy_get_status`].
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sets shared data identified by the `key` to the `value`.
+Sets shared data identified by the key (`key_data`, `key_value`)
+to the value (`value_data`, `value_size`).
 
 If the compare-and-swap value (`cas`) is set to a non-zero value,
 then it must match the host's compare-and-swap value in order for
@@ -1338,7 +1350,8 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Returns shared value (`return_value`) identified by the `key`.
+Returns shared value (`return_value`) identified by the key (`key_data`,
+`key_value`).
 
 The compare-and-swap value (`return_cas`) can be used for atomically
 updating this value using [`proxy_set_shared_data`].
@@ -1364,9 +1377,9 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Registers shared queue under `name`.
+Registers shared queue under a name (`name_data`, `name_size`).
 
-If the `name` queue already exists, then it's going to be opened
+If the named queue already exists, then it's going to be opened
 instead of creating a new empty queue.
 
 Items can be enqueued/dequeued on the created/opened queue using
@@ -1390,7 +1403,8 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Resolves existing shared queue using `vm_id` and `name`.
+Resolves existing shared queue using the provided VM ID (`vm_id_data`,
+`vm_id_size`) and name (`name_data`, `name_size`).
 
 Items can be enqueued/dequeued on the opened queue using
 [`proxy_enqueue_shared_queue`] and/or [`proxy_dequeue_shared_queue`]
@@ -1412,7 +1426,8 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Adds `value` to the end of the queue `queue_id`.
+Adds item (`value_data`, `value_size`) to the end of the queue
+`queue_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -1430,7 +1445,8 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Retrieves `return_value` from the front of the queue `queue_id`.
+Retrieves value (`return_value_data`, `return_value_size`) from
+the front of the queue `queue_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -1466,7 +1482,8 @@ Called when a new item is enqueued on the queue `queue_id`.
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Defines a new metric of `metric_type` with a `name`.
+Defines a new metric of type `metric_type` with a name (`name_data`,
+`name_size`).
 
 Its value can be modified and/or retrieved using
 [`proxy_record_metric`], [`proxy_increment_metric`]
@@ -1545,6 +1562,9 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
+Retrievies value (`return_value_data`, `return_value_size`)
+of the property (`path_data`, `path_size`).
+
 Returned `status` value is:
 - `OK` on success.
 - `NOT_FOUND` when there was no property found at the requested `path`.
@@ -1563,6 +1583,9 @@ Returned `status` value is:
   - `i32 (size_t) value_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
+
+Sets value of the property (`path_data`, `path_size`) to the provided
+value (`value_data`, `value_size`).
 
 Returned `status` value is:
 - `OK` on success.
@@ -1587,9 +1610,11 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Calls registered foreign function `name` with `arguments`.
+Calls registered foreign function (`name_data`, `name_size`)
+with arguments (`arguments_data`, `arguments_size`).
 
-Its optional return values are written to `return_results`.
+Return value(s) (`return_results_data`, `return_results_size`)
+are optional.
 
 Returned `status` value is:
 - `OK` on success.
