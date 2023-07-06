@@ -1118,7 +1118,8 @@ Returned `status` value is:
 * returns:
   - none
 
-Called when HTTP response for `call_id` is received.
+Called when HTTP response for `call_id` sent using
+[`proxy_http_call`] is received.
 
 If `num_headers` is `0`, then the HTTP call failed.
 
@@ -1309,7 +1310,8 @@ Returned `status` value is:
 * returns:
   - none
 
-Called when initial gRPC metadata for `call_id` is received.
+Called when initial gRPC metadata for `call_id` opened using
+[`proxy_grpc_call`] or [`proxy_grpc_stream`] is received.
 
 All `num_elements` elements can be retrieved using
 [`proxy_get_header_map_pairs`] or individually
@@ -1326,7 +1328,8 @@ All `num_elements` elements can be retrieved using
 * returns:
   - none
 
-Called when the response gRPC message for `call_id` is received.
+Called when the response gRPC message for `call_id` sent using
+[`proxy_grpc_call`] or [`proxy_grpc_send`] is received.
 
 Message (of `message_size`) can be retrieved using
 [`proxy_get_buffer_bytes`] with `buffer_id` set to `GRPC_CALL_MESSAGE`.
@@ -1341,7 +1344,8 @@ Message (of `message_size`) can be retrieved using
 * returns:
   - none
 
-Called when trailing gRPC metadata for `call_id` is received.
+Called when trailing gRPC metadata for `call_id` opened using
+[`proxy_grpc_call`] or [`proxy_grpc_stream`] is received.
 
 All `num_elements` elements can be retrieved using
 [`proxy_get_header_map_pairs`] or individually
@@ -1358,7 +1362,8 @@ All `num_elements` elements can be retrieved using
 * returns:
   - none
 
-Called when gRPC call or stream `call_id` is closed.
+Called when gRPC call or stream `call_id` opened using
+[`proxy_grpc_call`] or [`proxy_grpc_stream`] is received.
 
 gRPC status message can be retrieved using [`proxy_get_status`].
 
