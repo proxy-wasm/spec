@@ -618,7 +618,7 @@ key (`key_data`, `key_value`) from the header map `map_id`.
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `map_id`.
-- `NOT_FOUND` when the requested `key` was not found.
+- `NOT_FOUND` when the requested key was not found.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`,
   `return_value_data` and/or `return_value_size` point to
   invalid memory address.
@@ -1358,7 +1358,7 @@ updating this value using [`proxy_set_shared_data`].
 
 Returned `status` value is:
 - `OK` on success.
-- `NOT_FOUND` when the requested `key` was not found.
+- `NOT_FOUND` when the requested key was not found.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`,
   `return_value_data`, `return_value_size` and/or `return_cas`
   point to invalid memory address.
