@@ -524,19 +524,18 @@ Returned `status` value is:
 * params:
   - `i32 (`[`proxy_buffer_type_t`]`) buffer_id`
   - `i32 (size_t *) return_buffer_size`
-  - `i32 (uint32_t *) return_buffer_flags`
+  - `i32 (uint32_t *) return_ignored`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Retrieves `return_buffer_size` and `return_buffer_flags`
-from the buffer `buffer_id`.
+Retrieves size (`return_buffer_size`) of the buffer `buffer_id`.
 
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `buffer_id`.
 - `NOT_FOUND` when requested `buffer_id` isn't available.
 - `INVALID_MEMORY_ACCESS` when `return_buffer_size` and/or
-  `return_buffer_flags` point to invalid memory address.
+  `return_ignored` point to invalid memory address.
 
 
 ## HTTP fields
