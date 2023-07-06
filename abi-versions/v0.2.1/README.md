@@ -1120,6 +1120,8 @@ Returned `status` value is:
 
 Called when HTTP response for `call_id` is received.
 
+If `num_headers` is `0`, then the HTTP call failed.
+
 All `num_headers` headers can be retrieved using
 [`proxy_get_header_map_pairs`]
 or individually [`proxy_get_header_map_value`]
