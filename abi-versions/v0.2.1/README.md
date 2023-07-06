@@ -796,7 +796,7 @@ Data (of `data_size`) can be retrieved and/or modified using
 [`proxy_get_buffer_bytes`] and/or [`proxy_set_buffer_bytes`]
 with `buffer_id` set to `UPSTREAM_DATA`.
 
-Paused downstream can be resumed using [`proxy_continue_stream`]
+Paused upstream can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `UPSTREAM`.
 
