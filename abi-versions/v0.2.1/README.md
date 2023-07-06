@@ -739,7 +739,7 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
 
-Called on a new connection.
+Called when a new connection is established.
 
 Plugin must return one of the following values:
 - `CONTINUE` to allow the new connection to be established.
