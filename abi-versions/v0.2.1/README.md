@@ -678,7 +678,7 @@ Returned `status` value is:
 Removes the key (`key_data`, `key_value`) from the header map `map_id`.
 
 Returned `status` value is:
-- `OK` on success.
+- `OK` on success (including the case when requested key didn't exist).
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `key_data` and/or `key_size` point to
   invalid memory address.
