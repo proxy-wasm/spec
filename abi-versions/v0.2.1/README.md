@@ -471,6 +471,30 @@ Returned `errno` value is:
 
 ## Buffers
 
+Access to buffers using functions in this section is restricted to
+specific callbacks:
+
+- `HTTP_REQUEST_BODY` can be read and modified in
+  [`proxy_on_request_body`] (or for as long as request processing
+  is paused from it).
+- `HTTP_RESPONSE_BODY` can be read and modified in
+  [`proxy_on_response_body`] (or for as long as response processing
+  is paused from it).
+- `DOWNSTREAM_DATA` can be read and modified in
+  [`proxy_on_downstream_data`] (or for as long as upstream processing
+  is paused from it).
+- `UPSTREAM_DATA` can be read and modified in
+  [`proxy_on_downstream_data`] (or for as long as downstream processing
+  is paused from it).
+- `HTTP_CALL_RESPONSE_BODY` can be read in
+  [`proxy_on_http_call_response`].
+- `GRPC_CALL_MESSAGE` can be read in [`proxy_on_grpc_receive`].
+- `VM_CONFIGURATION` can be read in [`proxy_on_vm_start`].
+- `PLUGIN_CONFIGURATION` can be read in [`proxy_on_configure`].
+- `FOREIGN_FUNCTION_ARGUMENTS` can be read in
+  [`proxy_on_foreign_function`].
+
+
 ### Functions exposed by the host
 
 #### `proxy_set_buffer_bytes`
@@ -539,6 +563,35 @@ Returned `status` value is:
 
 
 ## HTTP fields
+
+Access to HTTP fields using functions in this section is restricted to
+specific callbacks:
+
+- `HTTP_REQUEST_HEADERS` can be read in [`proxy_on_log`],
+  and read and modified from [`proxy_on_request_headers`]
+  (or for as long as request processing is paused from it).
+- `HTTP_REQUEST_TRAILERS` can be read in [`proxy_on_log`],
+  and read and modified in [`proxy_on_request_trailers`]
+  (or for as long as request processing is paused from it).
+  They can be added in [`proxy_on_request_body`], but only when the
+  proxied request doesn't have trailers (`end_of_stream` is `true`).
+- `HTTP_RESPONSE_HEADERS` can be read in [`proxy_on_log`],
+  and read and modified in [`proxy_on_response_headers`]
+  (or for as long as response processing is paused from it).
+- `HTTP_RESPONSE_TRAILERS` can be read in [`proxy_on_log`],
+  and read and modified in [`proxy_on_response_trailers`]
+  (or for as long as response processing is paused from it).
+  They can be added in [`proxy_on_response_body`], but only when the
+  proxied response doesn't have trailers (`end_of_stream` is `true`).
+- `GRPC_CALL_INITIAL_METADATA` can be read in
+  [`proxy_on_grpc_receive_initial_metadata`].
+- `GRPC_CALL_TRAILING_METADATA` can be read in
+  [`proxy_on_grpc_receive_trailing_metadata`].
+- `HTTP_CALL_RESPONSE_HEADERS` can be read in
+  [`proxy_on_http_call_response`].
+- `HTTP_CALL_RESPONSE_TRAILERS` can be read in
+  [`proxy_on_http_call_response`].
+
 
 ### Functions exposed by the host
 
