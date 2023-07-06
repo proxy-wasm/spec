@@ -899,8 +899,8 @@ Paused request can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_REQUEST`.
 
-Additionally, instead of forwarding request upstream, the host can send
-HTTP response using [`proxy_send_local_response`].
+Additionally, instead of forwarding request upstream, a HTTP response
+can be send using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_HEADERS` fields downstream.
@@ -925,6 +925,9 @@ with `buffer_id` set to `HTTP_REQUEST_BODY`.
 Paused HTTP request can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_REQUEST`.
+
+Additionally, as long as HTTP response headers were not send downstream,
+a HTTP response can be send using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_BODY` buffer upstream.
@@ -954,6 +957,9 @@ Paused request can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_REQUEST`.
 
+Additionally, as long as HTTP response headers were not send downstream,
+a HTTP response can be send using [`proxy_send_local_response`].
+
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_TRAILERS` fields downstream.
 - `PAUSE` to pause processing.
@@ -982,6 +988,9 @@ with `map_id` set to `HTTP_RESPONSE_HEADERS`.
 Paused request can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_RESPONSE`.
+
+Additionally, instead of forwarding the response from upstream,
+a new HTTP response can be send using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_RESPONSE_HEADERS` fields downstream.
@@ -1056,8 +1065,12 @@ Plugin must return one of the following values:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sends HTTP response with `body` and [serialized] `headers`
-without forwarding the original request upstream.
+Sends HTTP response with body (`body_data`, `body_size`) and
+[serialized] headers (`serialized_headers_data`,
+`serialized_headers_size`).
+
+This can be used as long as HTTP response headers were not send
+downstream.
 
 Returned `status` value is:
 - `OK` on success.
