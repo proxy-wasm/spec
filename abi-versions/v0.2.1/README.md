@@ -774,6 +774,27 @@ Returned `status` value is:
 - `BAD_ARGUMENT` for unknown `stream_type`.
 
 
+#### `proxy_get_status`
+
+* params:
+  - `i32 (uint32_t *) return_status_code`
+  - `i32 (const char **) return_status_message_data`
+  - `i32 (size_t *) return_status_message_size`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Retrieves status code (`return_status_code`) and status message
+(`return_status_message_data`, `return_status_message_size`) of
+the HTTP call when called from [`proxy_on_http_call_response`]
+or gRPC stream or call when called from [`proxy_on_grpc_close`].
+
+Returned `status` value is:
+- `OK` on success.
+- `INVALID_MEMORY_ACCESS` when `return_status_code`,
+  `return_status_message_data` and/or `return_status_message_size`
+  point to invalid memory address.
+
+
 ## TCP/UDP/QUIC streams
 
 > **Note**
@@ -1296,25 +1317,6 @@ Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for invalid `call_or_stream_id`.
 - `NOT_FOUND` for unknown `call_or_stream_id`.
-
-
-#### `proxy_get_status`
-
-* params:
-  - `i32 (uint32_t *) return_status_code`
-  - `i32 (const char **) return_status_message_data`
-  - `i32 (size_t *) return_status_message_size`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-Retrieves gRPC `return_status_code` and `return_status_message`
-when called from the [`proxy_on_grpc_close`] callback.
-
-Returned `status` value is:
-- `OK` on success.
-- `INVALID_MEMORY_ACCESS` when `return_status_code`,
-  `return_status_message_data` and/or `return_status_message_size`
-  point to invalid memory address.
 
 
 ### Callbacks exposed by the Wasm module
