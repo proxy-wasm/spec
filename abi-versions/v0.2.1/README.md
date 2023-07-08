@@ -39,8 +39,8 @@ parameters.
 * returns:
   - none
 
-Function marker used during linking to advertise support for
-Proxy-Wasm ABI v0.2.1.
+Function marker used during linking to advertise Wasm module's support
+for Proxy-Wasm ABI v0.2.1.
 
 This function is never called.
 
