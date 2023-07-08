@@ -166,7 +166,10 @@ Plugin must return one of the following values:
 Called after the host is done processing context, but before
 releasing its state.
 
-This callback can be used for generating final log entries.
+This can be used e.g. for generating final log entries.
+
+It's called after `true` was returned from [`proxy_on_done`]
+or after a call to [`proxy_done`].
 
 
 #### `proxy_on_delete`
@@ -176,10 +179,11 @@ This callback can be used for generating final log entries.
 * returns:
   - none
 
-Called when the host removes the context (`context_id`).
+Called when the host removes the context (`context_id`) to signal that
+the plugin should stop tracking it and remove all associated state.
 
-This is used to signal that the plugin should stop tracking active
-context and remove all associated state.
+It's called after `true` was returned from [`proxy_on_done`]
+or after a call to [`proxy_done`].
 
 
 ### Functions exposed by the host
