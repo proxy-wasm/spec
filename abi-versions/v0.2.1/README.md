@@ -905,7 +905,7 @@ or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_REQUEST`.
 
 Additionally, instead of forwarding request upstream, a HTTP response
-can be send using [`proxy_send_local_response`].
+can be sent using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_HEADERS` fields downstream.
@@ -932,7 +932,7 @@ or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_REQUEST`.
 
 Additionally, as long as HTTP response headers were not send downstream,
-a HTTP response can be send using [`proxy_send_local_response`].
+a HTTP response can be sent using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_BODY` buffer upstream.
@@ -963,7 +963,7 @@ or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_REQUEST`.
 
 Additionally, as long as HTTP response headers were not send downstream,
-a HTTP response can be send using [`proxy_send_local_response`].
+a HTTP response can be sent using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_TRAILERS` fields downstream.
@@ -995,7 +995,7 @@ or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_RESPONSE`.
 
 Additionally, instead of forwarding the response from upstream,
-a new HTTP response can be send using [`proxy_send_local_response`].
+a new HTTP response can be sent using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_RESPONSE_HEADERS` fields downstream.
@@ -1116,7 +1116,7 @@ Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `upstream`, or when `headers` are missing
   required `:authority`, `:method` and/or `:path` values.
-- `INTERNAL_FAILURE` when host failed to send requested HTTP call.
+- `INTERNAL_FAILURE` when the host failed to send requested HTTP call.
 - `INVALID_MEMORY_ACCESS` when `upstream_data`, `upstream_size`,
   `headers_data`, `headers_size` `body_data`, `body_size`,
   `trailers_data`, `trailers_size` and/or `return_call_id` point to
