@@ -136,8 +136,8 @@ Returning `0` indicates failure.
 
 Called when the host creates a new context (`context_id`).
 
-When `parent_context_id` is `0` then a new plugin ("root") context
-is created, otherwise a new per-stream context is created.
+When `parent_context_id` is `0` then a new plugin context is created,
+otherwise a new per-stream context is created.
 
 
 #### `proxy_on_done`
@@ -226,7 +226,7 @@ Returned `status` value is:
 #### `proxy_on_vm_start`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) plugin_context_id`
   - `i32 (size_t) vm_configuration_size`
 * returns:
   - `i32 (bool) status`
@@ -244,7 +244,7 @@ Plugin must return one of the following values:
 #### `proxy_on_configure`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) plugin_context_id`
   - `i32 (size_t) plugin_configuration_size`
 * returns:
   - `i32 (bool) status`
@@ -396,7 +396,7 @@ Returned `status` value is:
 #### `proxy_on_tick`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) plugin_context_id`
 * returns:
   - none
 
@@ -780,14 +780,14 @@ Returned `status` value is:
 ### Callbacks exposed by the Wasm module
 
 > **Note**
-> The same unique `context_id` is shared by a pair of `downstream`
-> and `upstream` connections.
+> The same unique `stream_context_id` is shared by
+> a pair of `downstream` and `upstream` connections.
 
 
 #### `proxy_on_new_connection`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
 
@@ -801,7 +801,7 @@ Plugin must return one of the following values:
 #### `proxy_on_downstream_data`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (size_t) data_size`
   - `i32 (bool) end_of_stream`
 * returns:
@@ -825,7 +825,7 @@ Plugin must return one of the following values:
 #### `proxy_on_downstream_connection_close`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (`[`proxy_peer_type_t`]`) peer_type`
 * returns:
   - none
@@ -836,7 +836,7 @@ Called when downstream connection is closed.
 #### `proxy_on_upstream_data`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (size_t) data_size`
   - `i32 (bool) end_of_stream`
 * returns:
@@ -860,7 +860,7 @@ Plugin must return one of the following values:
 #### `proxy_on_upstream_connection_close`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (`[`proxy_peer_type_t`]`) peer_type`
 * returns:
   - none
@@ -873,12 +873,13 @@ Called when upstream connection is closed.
 ### Callbacks exposed by the Wasm module
 
 > **Note**
-> The same unique `context_id` is shared by HTTP request and response.
+> The same unique `stream_context_id` is shared by
+> HTTP request and response.
 
 #### `proxy_on_request_headers`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (size_t) num_headers`
   - `i32 (bool) end_of_stream`
 * returns:
@@ -910,7 +911,7 @@ Plugin must return one of the following values:
 #### `proxy_on_request_body`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (size_t) body_size`
   - `i32 (bool) end_of_stream`
 * returns:
@@ -937,7 +938,7 @@ Plugin must return one of the following values:
 #### `proxy_on_request_trailers`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (size_t) num_trailers`
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
@@ -968,7 +969,7 @@ Plugin must return one of the following values:
 #### `proxy_on_response_headers`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (size_t) num_headers`
   - `i32 (bool) end_of_stream`
 * returns:
@@ -1000,7 +1001,7 @@ Plugin must return one of the following values:
 #### `proxy_on_response_body`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (size_t) body_size`
   - `i32 (bool) end_of_stream`
 * returns:
@@ -1024,7 +1025,7 @@ Plugin must return one of the following values:
 #### `proxy_on_response_trailers`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (size_t) num_trailers`
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
@@ -1123,7 +1124,7 @@ Returned `status` value is:
 #### `proxy_on_http_call_response`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (size_t) num_headers`
   - `i32 (size_t) body_size`
@@ -1317,7 +1318,7 @@ Returned `status` value is:
 #### `proxy_on_grpc_receive_initial_metadata`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (size_t) num_elements`
 * returns:
@@ -1335,7 +1336,7 @@ All `num_elements` elements can be retrieved using
 #### `proxy_on_grpc_receive`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (size_t) message_size`
 * returns:
@@ -1351,7 +1352,7 @@ Message (of `message_size`) can be retrieved using
 #### `proxy_on_grpc_receive_trailing_metadata`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (size_t) num_elements`
 * returns:
@@ -1369,7 +1370,7 @@ All `num_elements` elements can be retrieved using
 #### `proxy_on_grpc_close`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (uint32_t) status_code`
 * returns:
@@ -1532,7 +1533,7 @@ Returned `status` value is:
 
 #### `proxy_on_queue_ready`
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) queue_id`
 * returns:
   - none
@@ -1701,7 +1702,7 @@ Returned `status` value is:
 #### `proxy_on_foreign_function`
 
 * params:
-  - `i32 (uint32_t) context_id`
+  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) function_id`
   - `i32 (size_t) arguments_size`
 * returns:
