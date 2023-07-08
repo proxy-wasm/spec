@@ -832,7 +832,12 @@ Plugin must return one of the following values:
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
 
-Called for each data chunk received from downstream.
+Called for each data chunk received from downstream,
+even when the processing is paused.
+
+`data_size` represents total available size of the data that can be
+retrieved, and its value will increment if the processing is paused
+and data is buffered by the host and not forwarded upstream.
 
 Data (of `data_size`) can be retrieved and/or modified using
 [`proxy_get_buffer_bytes`] and/or [`proxy_set_buffer_bytes`]
@@ -867,7 +872,12 @@ Called when downstream connection is closed.
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
 
-Called for each data chunk received from upstream.
+Called for each data chunk received from upstream,
+even when the processing is paused.
+
+`data_size` represents total available size of the data that can be
+retrieved, and its value will increment if the processing is paused
+and data is buffered by the host and not forwarded downstream.
 
 Data (of `data_size`) can be retrieved and/or modified using
 [`proxy_get_buffer_bytes`] and/or [`proxy_set_buffer_bytes`]
@@ -942,11 +952,16 @@ Plugin must return one of the following values:
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
 
-Called for each chunk of HTTP request body received from downstream.
+Called for each chunk of HTTP request body received from downstream,
+even when the processing is paused.
 
 Request body chunk (of `body_size`) can be retrieved and/or modified
 using [`proxy_get_buffer_bytes`] and/or [`proxy_set_buffer_bytes`]
 with `buffer_id` set to `HTTP_REQUEST_BODY`.
+
+`body_size` represents total available size of the body that can be
+retrieved, and its value will increment if the processing is paused
+and the body is buffered by the host and not forwarded upstream.
 
 Paused HTTP request can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
@@ -1032,11 +1047,16 @@ Plugin must return one of the following values:
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
 
-Called for each chunk of HTTP response body received from upstream.
+Called for each chunk of HTTP response body received from upstream,
+even when the processing is paused.
 
 Response body chunk (of `body_size`) can be retrieved and/or modified
 using [`proxy_get_buffer_bytes`] and/or [`proxy_set_buffer_bytes`]
 with `buffer_id` set to `HTTP_RESPONSE_BODY`.
+
+`body_size` represents total available size of the body that can be
+retrieved, and its value will increment if the processing is paused
+and the body is buffered by the host and not forwarded downstream.
 
 Paused HTTP response can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
