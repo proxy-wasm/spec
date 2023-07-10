@@ -24,7 +24,6 @@ Proxy-Wasm extensions across different proxies.
 [C++ SDK]: https://github.com/proxy-wasm/proxy-wasm-cpp-sdk
 [Go (TinyGo) SDK]: https://github.com/tetratelabs/proxy-wasm-go-sdk
 [Rust SDK]: https://github.com/proxy-wasm/proxy-wasm-rust-sdk
-[Zig SDK]: https://github.com/mathetake/proxy-wasm-zig-sdk
 
 ### Host environments
 
