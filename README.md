@@ -18,7 +18,6 @@ Proxy-Wasm extensions across different proxies.
 * [C++ SDK]
 * [Go (TinyGo) SDK]
 * [Rust SDK]
-* [Zig SDK]
 
 [AssemblyScript SDK]: https://github.com/solo-io/proxy-runtime
 [C++ SDK]: https://github.com/proxy-wasm/proxy-wasm-cpp-sdk
