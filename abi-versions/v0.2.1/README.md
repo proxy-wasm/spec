@@ -1641,16 +1641,16 @@ Returned `status` value is:
 
 * params:
   - `i32 (uint32_t) metric_id`
-  - `i64 (int64_t) offset`
+  - `i64 (int64_t) delta`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Changes metric `metric_id` by the `offset`.
+Changes metric `metric_id` by the `delta`.
 
 Returned `status` value is:
 - `OK` on success.
 - `NOT_FOUND` when the requested `metric_id` was not found.
-- `BAD_ARGUMENT` when requested `offset` cannot be applied to
+- `BAD_ARGUMENT` when requested `delta` cannot be applied to
   `metric_id` (e.g. trying to decrement counter).
 
 
