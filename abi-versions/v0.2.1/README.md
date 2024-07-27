@@ -938,6 +938,7 @@ Called when upstream connection is closed.
 > The same unique `stream_context_id` is shared by
 > HTTP request and response.
 
+
 #### `proxy_on_request_headers`
 
 * params:
@@ -1677,6 +1678,7 @@ Returned `status` value is:
 
 > **Warning**
 > Properties are implementation-dependent and not stable.
+
 
 ### Functions exposed by the host
 
