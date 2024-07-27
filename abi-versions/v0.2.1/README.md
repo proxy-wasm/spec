@@ -623,17 +623,17 @@ specific callbacks:
 
 * params:
   - `i32 (`[`proxy_header_map_type_t`]`) map_id`
-  - `i32 (size_t *) return_pairs_size`
+  - `i32 (size_t *) return_serialized_pairs_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Retrieves size (`return_pairs_size`) of all key-value pairs from
-the header map `map_id`.
+Retrieves size (`return_serialized_pairs_size`) of all key-value pairs
+from the header map `map_id`.
 
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `map_id`.
-- `INVALID_MEMORY_ACCESS` when `return_pairs_size` points to
+- `INVALID_MEMORY_ACCESS` when `return_serialized_pairs_size` points to
   invalid memory address.
 
 
@@ -654,8 +654,8 @@ Returned header map (`return_serialized_pairs_data`,
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `map_id`.
-- `INVALID_MEMORY_ACCESS` when `return_pairs_data` and/or
-  `return_pairs_size` point to invalid memory address.
+- `INVALID_MEMORY_ACCESS` when `return_serialized_pairs_data` and/or
+  `return_serialized_pairs_size` point to invalid memory address.
 
 
 #### `proxy_set_header_map_pairs`
@@ -673,8 +673,8 @@ Sets all key-value pairs in the header map `map_id` to the provided
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `map_id`.
-- `INVALID_MEMORY_ACCESS` when `pairs_data` and/or
-  `pairs_size` point to invalid memory address.
+- `INVALID_MEMORY_ACCESS` when `serialized_pairs_data` and/or
+  `serialized_pairs_size` point to invalid memory address.
 
 
 #### `proxy_get_header_map_value`
@@ -1141,8 +1141,9 @@ downstream.
 Returned `status` value is:
 - `OK` on success.
 - `INVALID_MEMORY_ACCESS` when `status_code_details_data`,
-  `status_code_details_size`, `body_data`, `body_size`, `headers_data`
-  and/or `headers_size` point to invalid memory address.
+  `status_code_details_size`, `body_data`, `body_size`,
+  `serialized_headers_data` and/or `serialized_headers_size`
+  point to invalid memory address.
 
 
 ## HTTP calls
@@ -1179,9 +1180,9 @@ Returned `status` value is:
   required `:authority`, `:method` and/or `:path` values.
 - `INTERNAL_FAILURE` when the host failed to send requested HTTP call.
 - `INVALID_MEMORY_ACCESS` when `upstream_data`, `upstream_size`,
-  `headers_data`, `headers_size` `body_data`, `body_size`,
-  `trailers_data`, `trailers_size` and/or `return_call_id` point to
-  invalid memory address.
+  `serialized_headers_data`, `serialized_headers_size` `body_data`,
+  `body_size`, `serialized_trailers_data`, `serialized_trailers_size`
+  and/or `return_call_id` point to invalid memory address.
 
 
 ### Callbacks exposed by the Wasm module
@@ -1259,9 +1260,9 @@ Returned `status` value is:
 - `INTERNAL_FAILURE` when the host failed to send a gRPC call.
 - `INVALID_MEMORY_ACCESS` when `upstream_data`, `upstream_size`,
   `service_name_data`, `service_name_size` `method_name_data`,
-  `method_name_size`, `initial_metadata_data`, `initial_metadata_size`,
-  `message_data`, `message_size` and/or `return_call_id` point to
-  invalid memory address.
+  `method_name_size`, `serialized_initial_metadata_data`,
+  `serialized_initial_metadata_size`, `message_data`, `message_size`
+  and/or `return_call_id` point to invalid memory address.
 
 
 #### `proxy_grpc_stream`
@@ -1302,8 +1303,9 @@ Returned `status` value is:
 - `INTERNAL_FAILURE` when the host failed to open gRPC stream.
 - `INVALID_MEMORY_ACCESS` when `upstream_data`, `upstream_size`,
   `service_name_data`, `service_name_size` `method_name_data`,
-  `method_name_size`, `initial_metadata_data`, `initial_metadata_size`
-  and/or `return_stream_id` point to invalid memory address.
+  `method_name_size`, `serialized_initial_metadata_data`,
+  `serialized_initial_metadata_size` and/or `return_stream_id`
+  point to invalid memory address.
 
 
 #### `proxy_grpc_send`
