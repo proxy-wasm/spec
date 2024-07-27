@@ -497,8 +497,8 @@ Returned `errno` value is:
 
 ## Buffers
 
-Access to buffers using functions in this section is restricted to
-specific callbacks:
+Access to buffers (listed in [`proxy_buffer_type_t`]) using functions
+in this section is restricted to specific callbacks:
 
 - `HTTP_REQUEST_BODY` can be read and modified in
   [`proxy_on_request_body`] (or for as long as request processing
@@ -595,8 +595,8 @@ Returned `status` value is:
 
 ## HTTP fields
 
-Access to HTTP fields using functions in this section is restricted to
-specific callbacks:
+Access to HTTP fields (listed in [`proxy_map_type_t`]) using
+functions in this section is restricted to specific callbacks:
 
 - `HTTP_REQUEST_HEADERS` can be read in [`proxy_on_log`],
   and read and modified from [`proxy_on_request_headers`]
