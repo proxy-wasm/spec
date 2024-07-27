@@ -78,10 +78,10 @@ Called when the Wasm module is first loaded.
 #### `main`
 
 * params:
-  - `i32 (uint32_t) ignored`
-  - `i32 (uint32_t) ignored`
+  - `i32 (uint32_t) unused`
+  - `i32 (uint32_t) unused`
 * returns:
-  - `i32 (uint32_t) ignored`
+  - `i32 (uint32_t) unused`
 
 > **Warning**
 > This is called only if [`_initialize`] is also exported.
@@ -250,7 +250,7 @@ Returned `status` value is:
 #### `proxy_on_vm_start`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
+  - `i32 (uint32_t) unused`
   - `i32 (size_t) vm_configuration_size`
 * returns:
   - `i32 (bool) status`
@@ -379,7 +379,7 @@ Returned `status` value is:
 
 * params:
   - `i32 (`[`wasi_clock_id_t`]`) clock_id`
-  - `i64 (uint64_t) ignored`
+  - `i64 (uint64_t) unused`
   - `i32 (uint64_t *) return_time`
 * returns:
   - `i32 (`[`wasi_errno_t`]`) errno`
@@ -579,7 +579,7 @@ Returned `status` value is:
 * params:
   - `i32 (`[`proxy_buffer_type_t`]`) buffer_id`
   - `i32 (size_t *) return_buffer_size`
-  - `i32 (uint32_t *) return_ignored`
+  - `i32 (uint32_t *) return_unused`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
@@ -590,7 +590,7 @@ Returned `status` value is:
 - `BAD_ARGUMENT` for unknown `buffer_id`.
 - `NOT_FOUND` when requested `buffer_id` isn't available.
 - `INVALID_MEMORY_ACCESS` when `return_buffer_size` and/or
-  `return_ignored` point to invalid memory address.
+  `return_unused` point to invalid memory address.
 
 
 ## HTTP fields
