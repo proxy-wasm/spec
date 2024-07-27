@@ -411,6 +411,8 @@ Returned `errno` value is:
 Sets timer period (`tick_period`). When set, the host will call
 [`proxy_on_tick`] every `tick_period` milliseconds.
 
+Setting `tick_period` to `0` disables the timer.
+
 Returned `status` value is:
 - `OK` on success.
 
