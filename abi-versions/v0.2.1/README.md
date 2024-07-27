@@ -525,8 +525,8 @@ specific callbacks:
 
 * params:
   - `i32 (`[`proxy_buffer_type_t`]`) buffer_id`
-  - `i32 (uint32_t) offset`
-  - `i32 (uint32_t) size`
+  - `i32 (size_t) start`
+  - `i32 (size_t) size`
   - `i32 (const uint8_t *) value_data`
   - `i32 (size_t) value_size`
 * returns:
@@ -534,7 +534,12 @@ specific callbacks:
 
 Sets content of the buffer `buffer_id` to the provided value
 (`value_data`, `value_size`) replacing `size` bytes starting
-at `offset` in the existing buffer.
+at `start` in the existing buffer.
+
+The combination of `start` and `size` parameters can be used to perform
+prepend (`start=0`, `size=0`), append (`start` larger or equal than the
+existing buffer size, may be set to the maximum `size_t` value), inject
+and replace (`start` smaller than the existing buffer size) operations.
 
 Returned `status` value is:
 - `OK` on success.
@@ -548,20 +553,20 @@ Returned `status` value is:
 
 * params:
   - `i32 (`[`proxy_buffer_type_t`]`) buffer_id`
-  - `i32 (uint32_t) offset`
-  - `i32 (uint32_t) max_size`
+  - `i32 (size_t) start`
+  - `i32 (size_t) max_size`
   - `i32 (uint8_t **) return_value_data`
   - `i32 (size_t *) return_value_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Retrieves up to` max_size` bytes starting at `offset` from the buffer
+Retrieves up to `max_size` bytes starting at `start` from the buffer
 `buffer_id`.
 
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `buffer_id`, or in case of buffer overflow
-   due to invalid `offset` and/or `max_size` values.
+   due to invalid `start` and/or `max_size` values.
 - `NOT_FOUND` when requested `buffer_id` isn't available.
 - `INVALID_MEMORY_ACCESS` when `returned_value_data` and/or
   `returned_value_size` point to invalid memory address.
