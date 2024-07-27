@@ -622,13 +622,13 @@ specific callbacks:
 #### `proxy_get_header_map_size`
 
 * params:
-  - `i32 (`[`proxy_header_map_type_t`]`) map_id`
+  - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (size_t *) return_serialized_pairs_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Retrieves size (`return_serialized_pairs_size`) of all key-value pairs
-from the header map `map_id`.
+from the map `map_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -640,15 +640,15 @@ Returned `status` value is:
 #### `proxy_get_header_map_pairs`
 
 * params:
-  - `i32 (`[`proxy_header_map_type_t`]`) map_id`
+  - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (uint8_t **) return_serialized_pairs_data`
   - `i32 (size_t *) return_serialized_pairs_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Retrieves all key-value pairs from the header map `map_id`.
+Retrieves all key-value pairs from the map `map_id`.
 
-Returned header map (`return_serialized_pairs_data`,
+Returned map (`return_serialized_pairs_data`,
 `return_serialized_pairs_size`) is [serialized].
 
 Returned `status` value is:
@@ -661,13 +661,13 @@ Returned `status` value is:
 #### `proxy_set_header_map_pairs`
 
 * params:
-  - `i32 (`[`proxy_header_map_type_t`]`) map_id`
+  - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (const uint8_t *) serialized_pairs_data`
   - `i32 (size_t) serialized_pairs_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sets all key-value pairs in the header map `map_id` to the provided
+Sets all key-value pairs in the map `map_id` to the provided
 [serialized] map (`serialized_pairs_data`, `serialized_pairs_size`).
 
 Returned `status` value is:
@@ -680,7 +680,7 @@ Returned `status` value is:
 #### `proxy_get_header_map_value`
 
 * params:
-  - `i32 (`[`proxy_header_map_type_t`]`) map_id`
+  - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (const char *) key_data`
   - `i32 (size_t) key_size`
   - `i32 (uint8_t **) return_value_data`
@@ -688,8 +688,8 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Retrieves value (`return_value_data`, `return_value_size`) of the header
-key (`key_data`, `key_value`) from the header map `map_id`.
+Retrieves value (`return_value_data`, `return_value_size`) of the key
+(`key_data`, `key_value`) from the map `map_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -703,7 +703,7 @@ Returned `status` value is:
 #### `proxy_add_header_map_value`
 
 * params:
-  - `i32 (`[`proxy_header_map_type_t`]`) map_id`
+  - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (const char *) key_data`
   - `i32 (size_t) key_size`
   - `i32 (const uint8_t *) value_data`
@@ -712,7 +712,7 @@ Returned `status` value is:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Adds key (`key_data`, `key_size`) with value (`value_data`,
-`value_size`) to the header map `map_id`.
+`value_size`) to the map `map_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -724,7 +724,7 @@ Returned `status` value is:
 #### `proxy_replace_header_map_value`
 
 * params:
-  - `i32 (`[`proxy_header_map_type_t`]`) map_id`
+  - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (const char *) key_data`
   - `i32 (size_t) key_size`
   - `i32 (const uint8_t *) value_data`
@@ -733,7 +733,7 @@ Returned `status` value is:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Adds or replaces key's (`key_data`, `key_value`) value with the provided
-value (`value_data`, `value_size`) in the header map `map_id`.
+value (`value_data`, `value_size`) in the map `map_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -745,13 +745,13 @@ Returned `status` value is:
 #### `proxy_remove_header_map_value`
 
 * params:
-  - `i32 (`[`proxy_header_map_type_t`]`) map_id`
+  - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (const char *) key_data`
   - `i32 (size_t) key_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Removes the key (`key_data`, `key_value`) from the header map `map_id`.
+Removes the key (`key_data`, `key_value`) from the map `map_id`.
 
 Returned `status` value is:
 - `OK` on success (including the case when requested key didn't exist).
@@ -1858,7 +1858,7 @@ This function is never called.
 - `FOREIGN_FUNCTION_ARGUMENTS` = `8`
 
 
-#### `proxy_header_map_type_t`
+#### `proxy_map_type_t`
 
 - `HTTP_REQUEST_HEADERS` = `0`
 - `HTTP_REQUEST_TRAILERS` = `1`
@@ -2008,7 +2008,7 @@ TODO
 [`proxy_status_t`]: #proxy_status_t
 [`proxy_action_t`]: #proxy_action_t
 [`proxy_buffer_type_t`]: #proxy_buffer_type_t
-[`proxy_header_map_type_t`]: #proxy_header_map_type_t
+[`proxy_map_type_t`]: #proxy_map_type_t
 [`proxy_peer_type_t`]: #proxy_peer_type_t
 [`proxy_stream_type_t`]: #proxy_stream_type_t
 [`proxy_metric_type_t`]: #proxy_metric_type_t
