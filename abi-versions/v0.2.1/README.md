@@ -1698,7 +1698,7 @@ of the property (`path_data`, `path_size`).
 Returned `status` value is:
 - `OK` on success.
 - `NOT_FOUND` when there was no property found at the requested `path`.
-- `SERIALIZATION_FAILURE` TODO
+- `SERIALIZATION_FAILURE` when host failed to serialize property.
 - `INVALID_MEMORY_ACCESS` when `path_data`, `path_size`,
   `return_value_data` and/or `return_value_size` point to invalid
   memory address.
