@@ -262,7 +262,8 @@ Its configuration (of `vm_configuration_size`) can be retrieved using
 
 Plugin must return one of the following values:
 - `true` to indicate that the configuration was processed successfully.
-- `false` to indicate that the configuration processing failed.
+- `false` to indicate that the configuration processing failed, and that
+  this instance of WasmVM shouldn't be used.
 
 
 #### `proxy_on_configure`
@@ -281,7 +282,8 @@ using [`proxy_get_buffer_bytes`] with `buffer_id` set to
 
 Plugin must return one of the following values:
 - `true` to indicate that the configuration was processed successfully.
-- `false` to indicate that the configuration processing failed.
+- `false` to indicate that the configuration processing failed, and that
+  this instance of plugin shouldn't be used.
 
 
 ## Logging
