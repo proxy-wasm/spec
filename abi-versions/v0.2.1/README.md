@@ -767,7 +767,7 @@ Returned `status` value is:
   invalid memory address.
 
 
-## Common stream operations
+## Common HTTP and TCP stream operations
 
 ### Functions exposed by the host
 
@@ -930,7 +930,7 @@ Plugin must return one of the following values:
 Called when upstream connection is closed.
 
 
-## HTTP
+## HTTP streams
 
 ### Callbacks exposed by the Wasm module
 
