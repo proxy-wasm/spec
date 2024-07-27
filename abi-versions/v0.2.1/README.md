@@ -6,6 +6,26 @@ Status: **FINAL**
 
 ---
 
+# Terminology
+
+- *Plugin* - a WebAssembly module implementing Proxy-Wasm ABI. There are
+  3 types of plugins: *HTTP*, *Stream* (TCP) and *Background task*.
+
+- *Host* - a proxy or another environment that executes Proxy-Wasm Plugin
+  inside the WebAssembly Virtual Machine (WasmVM).
+
+- *Hostcall* - a function call from Plugin to Host.
+
+- *Callback* - a function call from Host to Plugin (usually, as a result
+  of an external event).
+
+- *Plugin Context* (also known as *Root Context*) - a context in which
+  operations not related to any specific request or stream are executed.
+
+- *Stream Context* - a context in which operations from a specific HTTP
+  request/response pair or TCP stream are executed.
+
+
 # Callbacks and Functions
 
 ### Callbacks exposed by the Wasm module
