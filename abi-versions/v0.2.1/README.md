@@ -2,7 +2,7 @@
 
 ---
 
-Status: **FINAL**
+Status: **FINAL** (corrections and/or clarifications are welcomed)
 
 ---
 
