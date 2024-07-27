@@ -820,7 +820,7 @@ Returned `status` value is:
   point to invalid memory address.
 
 
-## TCP/UDP/QUIC streams
+## TCP streams
 
 > **Note**
 > `downstream` refers to the connection between client and proxy,
