@@ -1824,6 +1824,29 @@ Returned `errno` value is:
 This function is never called.
 
 
+# Serialization
+
+> **Note**
+> The encoding of integers is little-endian.
+
+
+#### Maps with HTTP fields and/or gRPC metadata
+
+Non-empty maps are serialized as:
+- 32-bit integer containing the number of keys in the map,
+- a series of pairs of 32-bit integers containing length of key and value,
+- a series of pairs of bytes containing key and value, separated by `NULL`
+  (`0x00`) character.
+
+e.g. the map `{{"a": "1"}, {"b": "22"}}` would be serialized as:
+- `0x02`,
+- `0x01`, `0x01`, `0x01`, `0x02`,
+- `0x61`, `0x00`, `0x49`, `0x00`, `0x62`, `0x00`, `0x50`, `0x50`, `0x00`.
+
+An empty map may be represented either as an empty value (`size=0`), or as
+a single `0x00` byte (`size=1`).
+
+
 # Types
 
 #### `proxy_log_level_t`
@@ -1922,29 +1945,6 @@ This function is never called.
 
 - `REALTIME` = `0`
 - `MONOTONIC` = `1`
-
-
-# Serialization
-
-> **Note**
-> The encoding of integers is little-endian.
-
-
-#### Maps with HTTP fields and/or gRPC metadata
-
-Non-empty maps are serialized as:
-- 32-bit integer containing the number of keys in the map,
-- a series of pairs of 32-bit integers containing length of key and value,
-- a series of pairs of bytes containing key and value, separated by `NULL`
-  (`0x00`) character.
-
-e.g. the map `{{"a": "1"}, {"b": "22"}}` would be serialized as:
-- `0x02`,
-- `0x01`, `0x01`, `0x01`, `0x02`,
-- `0x61`, `0x00`, `0x49`, `0x00`, `0x62`, `0x00`, `0x50`, `0x50`, `0x00`.
-
-An empty map may be represented either as an empty value (`size=0`), or as
-a single `0x00` byte (`size=1`).
 
 
 [integration]: #Integration
