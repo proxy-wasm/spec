@@ -1847,6 +1847,43 @@ An empty map may be represented either as an empty value (`size=0`), or as
 a single `0x00` byte (`size=1`).
 
 
+# Security Considerations
+
+## External resources
+
+Hosts should maintain a list of external resources (e.g. upstream hosts)
+that each plugin instance can communicate with.
+
+
+## Memory and CPU limits
+
+Hosts should enforce limits on memory usage and maximum CPU time that
+plugins can consume during each invocation.
+
+
+## Plugin crashes
+
+In case of a crashing WasmVM (e.g. because of a bug in Proxy-Wasm Plugin),
+the host should log the information about the crash, including stacktrace,
+and create a new instance of a WasmVM and the Proxy-Wasm Plugin.
+
+The number of crashes should be tracked and rate-limited to prevent entering
+the crash-loop, where new instances keeps crashing and the creation of a new
+WasmVM is consuming too much resources leading to a denial of service (DoS).
+
+Upon reaching the limit, the host should reject new connections and/or requests
+that rely on the broken plugin, returning errors to clients, unless the plugin
+is optional, in which case its execution may be skipped.
+
+
+## Effective context changes
+
+Plugins can change the effective context to a different connection/request.
+
+Hosts should be aware of this, and might limit the ability to perform context
+changes to unrelated connections/requests.
+
+
 # Types
 
 #### `proxy_log_level_t`
