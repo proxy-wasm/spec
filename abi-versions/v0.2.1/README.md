@@ -1145,8 +1145,7 @@ Sends HTTP response with body (`body_data`, `body_size`) and
 [serialized] headers (`serialized_headers_data`,
 `serialized_headers_size`).
 
-This can be used as long as HTTP response headers were not send
-downstream.
+This can be used as long as HTTP response headers were not sent downstream.
 
 Returned `status` value is:
 - `OK` on success.
