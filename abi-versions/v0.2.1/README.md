@@ -450,7 +450,7 @@ Generates `buffer_size` bytes of randomness.
 
 Returned `errno` value is:
 - `SUCCESS` on success.
-- `INVAL` when requested `buffer_size` is too large.
+- `INVAL` when the requested `buffer_size` is too large.
 - `FAULT` when `buffer` and/or `buffer_size` point to invalid memory
   address.
 
@@ -548,7 +548,7 @@ and replace (`start` smaller than the existing buffer size) operations.
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `buffer_id`.
-- `NOT_FOUND` when requested `buffer_id` isn't available.
+- `NOT_FOUND` when the requested `buffer_id` isn't available.
 - `INVALID_MEMORY_ACCESS` when `value_data` and/or `value_size`
   point to invalid memory address.
 
@@ -571,7 +571,7 @@ Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `buffer_id`, or in case of buffer overflow
    due to invalid `start` and/or `max_size` values.
-- `NOT_FOUND` when requested `buffer_id` isn't available.
+- `NOT_FOUND` when the requested `buffer_id` isn't available.
 - `INVALID_MEMORY_ACCESS` when `returned_value_data` and/or
   `returned_value_size` point to invalid memory address.
 
@@ -590,7 +590,7 @@ Retrieves size (`return_buffer_size`) of the buffer `buffer_id`.
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `buffer_id`.
-- `NOT_FOUND` when requested `buffer_id` isn't available.
+- `NOT_FOUND` when the requested `buffer_id` isn't available.
 - `INVALID_MEMORY_ACCESS` when `return_buffer_size` and/or
   `return_unused` point to invalid memory address.
 
@@ -763,7 +763,7 @@ Returned `status` value is:
 Removes the key (`key_data`, `key_value`) from the map `map_id`.
 
 Returned `status` value is:
-- `OK` on success (including the case when requested key didn't exist).
+- `OK` on success (including the case when the requested key didn't exist).
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `key_data` and/or `key_size` point to
   invalid memory address.
@@ -785,7 +785,7 @@ Resumes processing of paused `stream_type`.
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `stream_type`.
-- `UNIMPLEMENTED` when continuation of requested `stream_type`
+- `UNIMPLEMENTED` when continuation of the requested `stream_type`
   is not supported.
 
 
@@ -864,9 +864,9 @@ Plugin must return one of the following values:
 Called for each data chunk received from downstream,
 even when the processing is paused.
 
-`data_size` represents total available size of the data that can be
-retrieved, and its value will increment if the processing is paused
-and data is buffered by the host and not forwarded upstream.
+`data_size` represents the total available size of the data that can be
+retrieved, and its value will increment if the processing is paused and
+data is buffered by the host and not forwarded upstream.
 
 Data (of `data_size`) can be retrieved and/or modified using
 [`proxy_get_buffer_bytes`] and/or [`proxy_set_buffer_bytes`]
@@ -904,9 +904,9 @@ Called when downstream connection is closed.
 Called for each data chunk received from upstream,
 even when the processing is paused.
 
-`data_size` represents total available size of the data that can be
-retrieved, and its value will increment if the processing is paused
-and data is buffered by the host and not forwarded downstream.
+`data_size` represents the total available size of the data that can be
+retrieved, and its value will increment if the processing is paused and
+data is buffered by the host and not forwarded downstream.
 
 Data (of `data_size`) can be retrieved and/or modified using
 [`proxy_get_buffer_bytes`] and/or [`proxy_set_buffer_bytes`]
@@ -961,12 +961,12 @@ Individual HTTP request headers can be retrieved and/or modified using
 [`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
 with `map_id` set to `HTTP_REQUEST_HEADERS`.
 
-Paused request can be resumed using [`proxy_continue_stream`]
+Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_REQUEST`.
 
-Additionally, instead of forwarding request upstream, a HTTP response
-can be sent using [`proxy_send_local_response`].
+Additionally, instead of forwarding the HTTP request to upstream,
+a HTTP response can be sent using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_HEADERS` fields downstream.
@@ -989,15 +989,15 @@ Request body chunk (of `body_size`) can be retrieved and/or modified
 using [`proxy_get_buffer_bytes`] and/or [`proxy_set_buffer_bytes`]
 with `buffer_id` set to `HTTP_REQUEST_BODY`.
 
-`body_size` represents total available size of the body that can be
-retrieved, and its value will increment if the processing is paused
-and the body is buffered by the host and not forwarded upstream.
+`body_size` represents the total available size of the body that can be
+retrieved, and its value will increment if the processing is paused and
+the body is buffered by the host and not forwarded upstream.
 
-Paused HTTP request can be resumed using [`proxy_continue_stream`]
+Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_REQUEST`.
 
-Additionally, as long as HTTP response headers were not send downstream,
+Additionally, as long as HTTP response headers were not sent downstream,
 a HTTP response can be sent using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
@@ -1024,11 +1024,11 @@ Individual HTTP request trailers can be retrieved and/or modified using
 [`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
 with `map_id` set to `HTTP_REQUEST_TRAILERS`.
 
-Paused request can be resumed using [`proxy_continue_stream`]
+Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_REQUEST`.
 
-Additionally, as long as HTTP response headers were not send downstream,
+Additionally, as long as HTTP response headers were not sent downstream,
 a HTTP response can be sent using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
@@ -1056,11 +1056,11 @@ Individual headers can be retrieved and/or modified using
 [`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
 with `map_id` set to `HTTP_RESPONSE_HEADERS`.
 
-Paused request can be resumed using [`proxy_continue_stream`]
+Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_RESPONSE`.
 
-Additionally, instead of forwarding the response from upstream,
+Additionally, instead of forwarding the HTTP response from upstream,
 a new HTTP response can be sent using [`proxy_send_local_response`].
 
 Plugin must return one of the following values:
@@ -1084,11 +1084,11 @@ Response body chunk (of `body_size`) can be retrieved and/or modified
 using [`proxy_get_buffer_bytes`] and/or [`proxy_set_buffer_bytes`]
 with `buffer_id` set to `HTTP_RESPONSE_BODY`.
 
-`body_size` represents total available size of the body that can be
-retrieved, and its value will increment if the processing is paused
-and the body is buffered by the host and not forwarded downstream.
+`body_size` represents the total available size of the body that can be
+retrieved, and its value will increment if the processing is paused and
+the body is buffered by the host and not forwarded downstream.
 
-Paused HTTP response can be resumed using [`proxy_continue_stream`]
+Paused HTTP responses can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_RESPONSE`.
 
@@ -1116,7 +1116,7 @@ Individual trailers can be retrieved and/or modified using
 [`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
 with `map_id` set to `HTTP_RESPONSE_TRAILERS`.
 
-Paused request can be resumed using [`proxy_continue_stream`]
+Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
 `HTTP_REQUEST`.
 
@@ -1188,7 +1188,7 @@ Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `upstream`, or when `headers` are missing
   required `:authority`, `:method` and/or `:path` values.
-- `INTERNAL_FAILURE` when the host failed to send requested HTTP call.
+- `INTERNAL_FAILURE` when the host failed to send the requested HTTP call.
 - `INVALID_MEMORY_ACCESS` when `upstream_data`, `upstream_size`,
   `serialized_headers_data`, `serialized_headers_size` `body_data`,
   `body_size`, `serialized_trailers_data`, `serialized_trailers_size`
@@ -1655,7 +1655,7 @@ Changes metric `metric_id` by the `delta`.
 Returned `status` value is:
 - `OK` on success.
 - `NOT_FOUND` when the requested `metric_id` was not found.
-- `BAD_ARGUMENT` when requested `delta` cannot be applied to
+- `BAD_ARGUMENT` when the requested `delta` cannot be applied to
   `metric_id` (e.g. trying to decrement counter).
 
 
@@ -1694,7 +1694,7 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Retrievies value (`return_value_data`, `return_value_size`)
+Retrieves value (`return_value_data`, `return_value_size`)
 of the property (`path_data`, `path_size`).
 
 Returned `status` value is:
@@ -1868,8 +1868,8 @@ the host should log the information about the crash, including stacktrace,
 and create a new instance of a WasmVM and the Proxy-Wasm Plugin.
 
 The number of crashes should be tracked and rate-limited to prevent entering
-the crash-loop, where new instances keeps crashing and the creation of a new
-WasmVM is consuming too much resources leading to a denial of service (DoS).
+the crash-loop, when new instances keep crashing and creation of new WasmVMs
+is consuming too much resources leading to a denial of service (DoS).
 
 Upon reaching the limit, the host should reject new connections and/or requests
 that rely on the broken plugin, returning errors to clients, unless the plugin
