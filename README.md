@@ -47,3 +47,9 @@ Proxy-Wasm extensions across different proxies.
 
 [C++ Host]: https://github.com/proxy-wasm/proxy-wasm-cpp-host
 [Go Host]: https://github.com/mosn/proxy-wasm-go-host
+
+## Community
+
+There is a [Proxy-Wasm on Slack]. Feel free to join and engage with the community.
+
+[Proxy-Wasm on Slack]: https://join.slack.com/t/proxy-wasm/shared_invite/zt-2nragshr6-nYH7p8jfBZevFIHpX~LIvg
