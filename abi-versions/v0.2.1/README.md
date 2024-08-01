@@ -1678,7 +1678,8 @@ Returned `status` value is:
 ## Properties
 
 > **Warning**
-> Properties are implementation-dependent and not stable.
+> Properties are implementation-dependent and not stable across
+> different versions of the same host.
 
 
 ### Functions exposed by the host
@@ -1723,6 +1724,90 @@ Returned `status` value is:
 - `NOT_FOUND` when there was no property found at the requested `path`.
 - `INVALID_MEMORY_ACCESS` when `path_data`, `path_size`, `value_data`
   and/or `value_size` point to invalid memory address.
+
+
+### Well-known properties
+
+> **Warning**
+> Properties are implementation-dependent and not stable across
+> different versions of the same host.
+> When targeting a specific host implementation (discouraged),
+> please refer to its official documentation for a complete list
+> of supported properties.
+
+
+#### Proxy-Wasm properties
+
+* `plugin_name` (string) - plugin name
+* `plugin_root_id` (string) - plugin root ID
+* `plugin_vm_id` (string) - plugin VM ID
+
+
+#### Downstream connection properties
+
+* `connection.id` (uint) - connection ID
+* `source.address` (string) - remote address
+* `source.port` (int) - remote port
+* `destination.address` (string) - local address
+* `destination.port` (int) - local port
+* `connection.tls_version` (string) - TLS version
+* `connection.requested_server_name` (string) - TLS SNI
+* `connection.mtls` (bool) - true if the TLS client certificate was validated
+* `connection.subject_local_certificate` (string) - subject of
+  the local certificate
+* `connection.subject_peer_certificate` (string) - subject of
+  the peer certificate
+* `connection.dns_san_local_certificate` (string) - first DNS entry in
+  the local certificate
+* `connection.dns_san_peer_certificate` (string) - first DNS entry in
+  the the peer certificate
+* `connection.uri_san_local_certificate` (string) - first URI entry in
+  the local certificate
+* `connection.uri_san_peer_certificate` (string) - first URI entry in
+  the peer certificate
+* `connection.sha256_peer_certificate_digest` (string) - SHA256 digest of
+  the peer certificate
+
+
+#### Upstream connection properties
+
+* `upstream.address` (string) - remote address
+* `upstream.port` (int) - remote port
+* `upstream.local_address` (string) - local address
+* `upstream.local_port` (int) - local port
+* `upstream.tls_version` (string) - TLS version
+* `upstream.subject_local_certificate` (string) - subject of
+  the local certificate
+* `upstream.subject_peer_certificate` (string) - subject of
+  the peer certificate
+* `upstream.dns_san_local_certificate` (string) - first DNS entry in
+  the local certificate
+* `upstream.dns_san_peer_certificate` (string) - first DNS entry in
+  the peer certificate
+* `upstream.uri_san_local_certificate` (string) - first URI entry in
+  the local certificate
+* `upstream.uri_san_peer_certificate` (string) - first URI entry in
+  the peer certificate
+* `upstream.sha256_peer_certificate_digest` (string) - SHA256 digest of
+  the peer certificate
+
+
+#### HTTP request properties
+
+* `request.protocol` (string) - HTTP version
+  (`HTTP/1.0`, `HTTP/1.1`, `HTTP/2`, `HTTP/3`)
+* `request.time` (timestamp) - time of the first byte received
+* `request.duration` (duration) - total duration of the HTTP request
+* `request.size` (int) - size of the HTTP request body
+* `request.total_size` (int) - total size of the HTTP request
+  (including HTTP headers and trailers)
+
+
+#### HTTP response properties
+
+* `response.size` (int) - size of the HTTP response body
+* `response.total_size` (int) - total size of the HTTP response
+  (including HTTP headers and trailers)
 
 
 ## Foreign function interface (FFI)
