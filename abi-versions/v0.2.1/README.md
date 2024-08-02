@@ -31,7 +31,8 @@ Status: **FINAL** (corrections and/or clarifications are welcomed)
 ### Callbacks exposed by the Wasm module
 
 All callbacks (entry points named `proxy_on_<event>`) are optional,
-and are going to be called only if exposed by the Wasm module.
+and are going to be called only if exposed by the Wasm module, and
+not restricted by the host due to policy and/or other reasons.
 
 All callbacks, other than the [integration] and [memory management]
 functions, include a unique context identifier as the first parameter,
