@@ -898,6 +898,9 @@ Plugin must return one of the following values:
 
 Called when downstream connection is closed.
 
+The `peer_type` should describe whether this was initiated by a `LOCAL`
+or `REMOTE` peer, but this value might also be `UNKNOWN`.
+
 
 #### `proxy_on_upstream_data`
 
@@ -937,6 +940,9 @@ Plugin must return one of the following values:
   - none
 
 Called when upstream connection is closed.
+
+The `peer_type` should describe whether this was initiated by a `LOCAL`
+or `REMOTE` peer, but this value might also be `UNKNOWN`.
 
 
 ## HTTP streams
