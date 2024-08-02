@@ -1932,8 +1932,8 @@ This function is never called.
 Non-empty maps are serialized as:
 - 32-bit integer containing the number of keys in the map,
 - a series of pairs of 32-bit integers containing length of key and value,
-- a series of pairs of bytes containing key and value, separated by `NULL`
-  (`0x00`) character.
+- a series of pairs of byte sequences containing key and value, with each
+  key and value byte sequence terminated by a `NULL` (`0x00`) character.
 
 e.g. the map `{{"a": "1"}, {"b": "22"}}` would be serialized as:
 - `0x02`,
