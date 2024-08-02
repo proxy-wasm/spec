@@ -30,11 +30,13 @@ Proxy-Wasm extensions across different proxies.
 
 * [ATS]
 * [Envoy]
+* [NGINX]
 * [MOSN]
 * [OpenResty]
 
 [ATS]: https://docs.trafficserver.apache.org/en/latest/admin-guide/plugins/wasm.en.html
 [Envoy]: https://github.com/envoyproxy/envoy
+[NGINX]: https://github.com/Kong/ngx_wasm_module
 [MOSN]: https://github.com/mosn/mosn
 [OpenResty]: https://github.com/api7/wasm-nginx-module
 
