@@ -10,6 +10,12 @@ Proxy-Wasm extensions across different proxies.
 
 [WebAssembly in Envoy]: docs/WebAssembly-in-Envoy.md
 
+## Specification
+
+The latest and widely implemented version of the specification is [v0.2.1].
+
+[v0.2.1]: abi-versions/v0.2.1/README.md
+
 ## Implementations
 
 ### SDKs
