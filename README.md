@@ -34,16 +34,16 @@ The latest and widely implemented version of the specification is [v0.2.1].
 
 #### Servers
 
+* [ATS]
 * [Envoy]
-* [Istio Proxy] (Envoy-based)
+* [NGINX]
 * [MOSN]
-* [ATS] (work-in-progress)
-* [OpenResty] (work-in-progress)
+* [OpenResty]
 
-[Envoy]: https://github.com/envoyproxy/envoy
-[Istio Proxy]: https://github.com/istio/proxy
-[MOSN]: https://github.com/mosn/mosn
 [ATS]: https://docs.trafficserver.apache.org/en/latest/admin-guide/plugins/wasm.en.html
+[Envoy]: https://github.com/envoyproxy/envoy
+[NGINX]: https://github.com/Kong/ngx_wasm_module
+[MOSN]: https://github.com/mosn/mosn
 [OpenResty]: https://github.com/api7/wasm-nginx-module
 
 #### Libraries
@@ -53,3 +53,9 @@ The latest and widely implemented version of the specification is [v0.2.1].
 
 [C++ Host]: https://github.com/proxy-wasm/proxy-wasm-cpp-host
 [Go Host]: https://github.com/mosn/proxy-wasm-go-host
+
+## Community
+
+There is a [Proxy-Wasm on Slack]. Feel free to join and engage with the community.
+
+[Proxy-Wasm on Slack]: https://join.slack.com/t/proxy-wasm/shared_invite/zt-2nragshr6-nYH7p8jfBZevFIHpX~LIvg
