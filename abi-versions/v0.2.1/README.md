@@ -345,6 +345,11 @@ Retrieves host's current log level (`return_log_level`).
 This can be used to avoid creating log entries that are going to be
 discarded by the host.
 
+> **Note**
+> Hosts might change the log level at runtime, and currently there is
+> no callback to notify the Wasm module about it, so `return_log_level`
+> can become stale.
+
 Returned `status` value is:
 - `OK` on success.
 - `INVALID_MEMORY_ACCESS` when `return_log_level` points to invalid
