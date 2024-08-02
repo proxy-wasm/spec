@@ -158,7 +158,8 @@ Returning `0` indicates failure.
 Called when the host creates a new context (`context_id`).
 
 When `parent_context_id` is `0` then a new plugin context is created,
-otherwise a new per-stream context is created.
+otherwise a new per-stream context is created and `parent_context_id`
+refers to the plugin context.
 
 
 #### `proxy_on_done`
