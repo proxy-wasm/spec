@@ -1,4 +1,4 @@
-# Proxy-Wasm ABI v0.2.1 specification
+# Proxy-Wasm ABI v0.2.0 specification
 
 ---
 
@@ -53,7 +53,7 @@ parameters.
 
 ### Callbacks exposed by the Wasm module
 
-#### `proxy_abi_version_0_2_1`
+#### `proxy_abi_version_0_2_0`
 
 * params:
   - none
@@ -61,7 +61,7 @@ parameters.
   - none
 
 Function marker used during linking to advertise Wasm module's support
-for Proxy-Wasm ABI v0.2.1.
+for Proxy-Wasm ABI v0.2.0.
 
 This function is never called.
 
@@ -331,29 +331,6 @@ Returned `errno` value is:
 - `BADF` for unknown or unsupported `fd_id`.
 - `FAULT` when `iovec`, `iovec_size` and/or `return_written_bytes`
   point to invalid memory address.
-
-
-#### `proxy_get_log_level`
-
-* params:
-  - `i32 (`[`proxy_log_level_t`]` *) return_log_level`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-Retrieves host's current log level (`return_log_level`).
-
-This can be used to avoid creating log entries that are going to be
-discarded by the host.
-
-> **Note**
-> Hosts might change the log level at runtime, and currently there is
-> no callback to notify the Wasm module about it, so `return_log_level`
-> can become stale.
-
-Returned `status` value is:
-- `OK` on success.
-- `INVALID_MEMORY_ACCESS` when `return_log_level` points to invalid
-  memory address.
 
 
 ## Clocks
@@ -2081,18 +2058,11 @@ changes to unrelated connections/requests.
 - `MONOTONIC` = `1`
 
 
-# Changes from [v0.2.0]
-
-- Added [`proxy_get_log_level`].
-
-
-[v0.2.0]: ../v0.2.0
-
 [integration]: #Integration
 [memory management]: #Memory-management
 [serialized]: #Serialization
 
-[`proxy_abi_version_0_2_1`]: #proxy_abi_version_0_2_1
+[`proxy_abi_version_0_2_0`]: #proxy_abi_version_0_2_0
 [`_initialize`]: #_initialize
 [`main`]: #main
 [`_start`]: #_start
