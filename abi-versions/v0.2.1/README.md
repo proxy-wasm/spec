@@ -2081,13 +2081,6 @@ changes to unrelated connections/requests.
 - `MONOTONIC` = `1`
 
 
-# Changes from [v0.2.0]
-
-- Added [`proxy_get_log_level`].
-
-
-[v0.2.0]: ../v0.2.0
-
 [integration]: #Integration
 [memory management]: #Memory-management
 [serialized]: #Serialization
