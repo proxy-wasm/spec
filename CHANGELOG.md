@@ -20,12 +20,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `proxy_get_header_map_value` now returns `NOT_FOUND` instead of `OK` with
   an empty value for non-existing keys.
 
-- Replaced `proxy_continue_request` with `proxy_continue_stream(HttpRequest)`.
+- Replaced `proxy_continue_request` with `proxy_continue_stream(HTTP_REQUEST)`.
 
-- Replaced `proxy_continue_response` with `proxy_continue_stream(HttpResponse)`.
+- Replaced `proxy_continue_response` with `proxy_continue_stream(HTTP_RESPONSE)`.
 
-- Replaced `proxy_get_configuration` with `proxy_get_buffer_bytes(VmConfiguration)`
-  and `proxy_get_buffer_bytes(PluginConfiguration)`.
+- Replaced `proxy_get_configuration` with `proxy_get_buffer_bytes(VM_CONFIGURATION)`
+  and `proxy_get_buffer_bytes(PLUGIN_CONFIGURATION)`.
 
 ### Removed
 
