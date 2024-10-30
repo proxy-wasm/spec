@@ -2082,9 +2082,15 @@ changes to unrelated connections/requests.
 
 # Callback transition diagram
 
+Below is a diagram for the HTTP module callback order: 
+
 ```mermaid
-graph CallbackTransition;
-(init) --> proxy_on_vm_start;
+flowchart TD;
+    {start} --> on_context_create0;
+    on_context_create0 --> on_vm_start;
+    on_vm_start --> on_configure;
+    on_configure --> |per-request N| on_context_createN;
+    on_context_createN --> on_request_headers;
 ```
 
 
