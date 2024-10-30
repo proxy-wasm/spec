@@ -2080,6 +2080,13 @@ changes to unrelated connections/requests.
 - `REALTIME` = `0`
 - `MONOTONIC` = `1`
 
+# Callback transition diagram
+
+```mermaid
+graph CallbackTransition;
+(init) --> proxy_on_vm_start;
+```
+
 
 [integration]: #Integration
 [memory management]: #Memory-management
