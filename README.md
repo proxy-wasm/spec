@@ -14,7 +14,10 @@ Proxy-Wasm extensions across different proxies.
 
 The latest and widely implemented version of the specification is [v0.2.1].
 
+The envisioned evolution for Proxy-Wasm is described in the [roadmap].
+
 [v0.2.1]: abi-versions/v0.2.1/README.md
+[roadmap]: docs/Roadmap.md
 
 ## Implementations
 
