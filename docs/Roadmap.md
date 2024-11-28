@@ -11,7 +11,7 @@ following tracks:
 Each track is described in more detail below, with owners and ETAs listed for
 efforts currently in development. This roadmap should not be construed as a set
 of commitments, but rather a set of directions that are subject to change in
-response to community interest and investment.
+response to community interest and contributions.
 
 The overarching goals of this document are to:
 
@@ -31,15 +31,16 @@ The overarching goals of this document are to:
     *   Repeated header support (proxy-wasm/spec#53)
 *   (Help wanted) WASI convergence. We want to adopt the component model at WASI
     1.0. There is a lot of overlap between Proxy-Wasm and some WASI proposals
-    (wasi-http, wasi-keyvalue, etc). In the short term, we'd like to define the
-    Proxy-Wasm ABI in
+    ([wasi-http](https://github.com/WebAssembly/wasi-http),
+    [wasi-keyvalue](https://github.com/WebAssembly/wasi-keyvalue), etc). In the
+    short term, we'd like to define the Proxy-Wasm ABI in
     [WIT](https://github.com/WebAssembly/component-model/blob/main/design/mvp/WIT.md),
     to understand:
     *   How do
         [Proxy-Wasm interfaces](https://github.com/proxy-wasm/proxy-wasm-cpp-host/blob/main/include/proxy-wasm/context_interface.h)
         map to components?
     *   What are the API gaps? How should we evolve Proxy-Wasm to become
-        WASI-compatible?
+        WASI-compatible? What are good incremental steps?
     *   Are there any performance gaps?
 *   (Help wanted) Evaluate uses of foreign functions to identify feature gaps.
     *   For example, Envoy
@@ -66,7 +67,7 @@ The overarching goals of this document are to:
         [Lua filter](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/lua_filter)
     *   Could benefit NGINX's Lua-based [OpenResty](https://openresty.org/)
         ecosystem
-*   (Help wanted) Optimize Rust SDK module size. It seems compiler dead-code
+*   (Help wanted) Optimize Rust SDK binary size. It seems compiler dead-code
     elimination is thwarted by the use of Context traits.
 
 <a name="host"></a>
