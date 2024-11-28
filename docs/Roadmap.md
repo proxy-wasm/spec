@@ -20,13 +20,15 @@ The overarching goals of this document are to:
 *   Align this repository with the vision of WebAssembly: a portable technology
     that is cross-language, cross-platform, and cross-provider.
 
-## Spec / ABI {#abi}
+## Spec / ABI
+
+<a name="abi"></a>
 
 *   (Q1'25: @piotrsikora, @mpwarres) Publish ABI v0.3, containing at least:
-    *   Feature negotiation (#71 and #56)
-    *   Better header/body buffering support (#63)
-    *   Async shared data (#54)
-    *   Repeated header support (#53)
+    *   Feature negotiation (proxy-wasm/spec#71 and proxy-wasm/spec#56)
+    *   Better header/body buffering support (proxy-wasm/spec#63)
+    *   Async shared data (proxy-wasm/spec#54)
+    *   Repeated header support (proxy-wasm/spec#53)
 *   (Help wanted) WASI convergence. We want to adopt the component model at WASI
     1.0. There is a lot of overlap between Proxy-Wasm and some WASI proposals
     (wasi-http, wasi-keyvalue, etc). In the short term, we'd like to define the
@@ -47,16 +49,19 @@ The overarching goals of this document are to:
     *   Are there similar extensions in Nginx? Apache Traffic Server?
     *   Which of these features should be promoted to ABI interfaces?
 
-## SDKs / language support {#sdks}
+## SDKs / language support
+
+<a name="sdks"></a>
 
 *   (Q1'25: @leonm1) Fork the abandoned Go SDK + support full Golang.
 *   (Google exploring) Build a Python SDK using a MicroPython port.
 *   (Help wanted) Stop using Emscripten in the C++ SDK. Instead use Clang /
-    wasi-sdk (proxy-wasm-cpp-sdk#167).
+    wasi-sdk (proxy-wasm/proxy-wasm-cpp-sdk#167).
 *   (Help wanted) Merge LeakSignal's
     [proxy-sdk](https://crates.io/crates/proxy-sdk) crate into the Rust SDK.
 *   (Help wanted) Build a Lua SDK using a Lua interpreter.
-    *   Seems feasible given projects like https://github.com/vvanders/wasm_lua
+    *   Seems quite feasible given projects like
+        [wasm_lua](https://github.com/vvanders/wasm_lua).
     *   Could replace Envoy's
         [Lua filter](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/lua_filter)
     *   Could benefit NGINX's Lua-based [OpenResty](https://openresty.org/)
@@ -64,7 +69,9 @@ The overarching goals of this document are to:
 *   (Help wanted) Optimize Rust SDK module size. It seems compiler dead-code
     elimination is thwarted by the use of Context traits.
 
-## Host features {#host}
+## Host features
+
+<a name="host"></a>
 
 *   (Q1'25: @mpwarres) CppHost maintenance.
     *   Update v8 and upstream some patches for v8 warming / extension.
@@ -89,10 +96,13 @@ The overarching goals of this document are to:
 *   (Help wanted) Implement NullVM for Rust and/or Go. For proxy owners with
     trusted extensions, achieve native performance while maintaining
     WebAssembly's portability.
-*   (Help wanted) Finish the implementation of DynVM (proxy-wasm-cpp-host#379).
-    This allows dynamic loading of trusted (NullVm) wasm modules.
+*   (Help wanted) Finish the implementation of DynVM
+    (proxy-wasm/proxy-wasm-cpp-host#379). This allows dynamic loading of trusted
+    (NullVm) wasm modules.
 
-## Envoy integration {#envoy}
+## Envoy integration
+
+<a name="envoy"></a>
 
 *   (Q1'25: @mpwarres, @botengyao) Get Envoy's inline wasm filter out of alpha
     (envoyproxy/envoy#36996). Documentation, security scanning, tests, bug
