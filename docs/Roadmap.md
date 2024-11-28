@@ -20,9 +20,9 @@ The overarching goals of this document are to:
 *   Align this repository with the vision of WebAssembly: a portable technology
     that is cross-language, cross-platform, and cross-provider.
 
-## Spec / ABI
-
 <a name="abi"></a>
+
+## Spec / ABI
 
 *   (Q1'25: @piotrsikora, @mpwarres) Publish ABI v0.3, containing at least:
     *   Feature negotiation (proxy-wasm/spec#71 and proxy-wasm/spec#56)
@@ -49,9 +49,9 @@ The overarching goals of this document are to:
     *   Are there similar extensions in Nginx? Apache Traffic Server?
     *   Which of these features should be promoted to ABI interfaces?
 
-## SDKs / language support
-
 <a name="sdks"></a>
+
+## SDKs / language support
 
 *   (Q1'25: @leonm1) Fork the abandoned Go SDK + support full Golang.
 *   (Google exploring) Build a Python SDK using a MicroPython port.
@@ -69,9 +69,9 @@ The overarching goals of this document are to:
 *   (Help wanted) Optimize Rust SDK module size. It seems compiler dead-code
     elimination is thwarted by the use of Context traits.
 
-## Host features
-
 <a name="host"></a>
+
+## Host features
 
 *   (Q1'25: @mpwarres) CppHost maintenance.
     *   Update v8 and upstream some patches for v8 warming / extension.
@@ -100,9 +100,9 @@ The overarching goals of this document are to:
     (proxy-wasm/proxy-wasm-cpp-host#379). This allows dynamic loading of trusted
     (NullVm) wasm modules.
 
-## Envoy integration
-
 <a name="envoy"></a>
+
+## Envoy integration
 
 *   (Q1'25: @mpwarres, @botengyao) Get Envoy's inline wasm filter out of alpha
     (envoyproxy/envoy#36996). Documentation, security scanning, tests, bug
@@ -117,5 +117,5 @@ The overarching goals of this document are to:
     costs (one VM serves multiple Envoy threads).
 *   (Help wanted) Envoy has a single implementation for the entire Proxy-Wasm
     host. Add extension points for different Proxy-Wasm interfaces (telemetry,
-    network calls, key value, shared queue), so Envoy operators may provide
+    network calls, key value, shared queue), so that Envoy operators may provide
     their own implementations.
