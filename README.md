@@ -22,12 +22,12 @@ The latest and widely implemented version of the specification is [v0.2.1].
 
 * [AssemblyScript SDK]
 * [C++ SDK]
-* [Go (TinyGo) SDK]
+* [Go SDK]
 * [Rust SDK]
 
 [AssemblyScript SDK]: https://github.com/solo-io/proxy-runtime
 [C++ SDK]: https://github.com/proxy-wasm/proxy-wasm-cpp-sdk
-[Go (TinyGo) SDK]: https://github.com/tetratelabs/proxy-wasm-go-sdk
+[Go SDK]: https://github.com/proxy-wasm/proxy-wasm-go-sdk
 [Rust SDK]: https://github.com/proxy-wasm/proxy-wasm-rust-sdk
 
 ### Host environments
