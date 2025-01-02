@@ -1156,7 +1156,8 @@ Plugin must return one of the following values:
 
 Sends HTTP response with body (`body_data`, `body_size`) and
 [serialized] headers (`serialized_headers_data`,
-`serialized_headers_size`).
+`serialized_headers_size`). The response is sent after the current
+callback completes and triggers response callbacks.
 
 This can be used as long as HTTP response headers were not sent downstream.
 
