@@ -24,8 +24,8 @@ The overarching goals of this document are to:
 
 ## Spec / ABI
 
--   (Q1'25: @piotrsikora, @mpwarres) Publish ABI v0.3. The list of
-    [planned changes](proxy-wasm/spec/milestone/1) includes:
+-   (@piotrsikora, @mpwarres) Publish ABI v0.3. The list of
+    [planned changes](https://github.com/proxy-wasm/spec/milestone/1) includes:
     -   Feature negotiation (proxy-wasm/spec#71 and proxy-wasm/spec#56)
     -   Better header/body buffering support (proxy-wasm/spec#63)
     -   Support for HTTP fields with multiple values (proxy-wasm/spec#53)
