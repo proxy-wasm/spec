@@ -50,9 +50,11 @@ The latest and widely implemented version of the specification is [v0.2.1].
 
 * [C++ Host]
 * [Go Host]
+* [Java Host]
 
 [C++ Host]: https://github.com/proxy-wasm/proxy-wasm-cpp-host
 [Go Host]: https://github.com/mosn/proxy-wasm-go-host
+[Java Host]: https://github.com/roastedroot/proxy-wasm-java-host
 
 ## Community
 
