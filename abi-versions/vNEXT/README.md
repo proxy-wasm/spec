@@ -1780,6 +1780,10 @@ Returned `status` value is:
   the peer certificate
 * `connection.sha256_peer_certificate_digest` (string) - SHA256 digest of
   the peer certificate
+* `connection.oid_map_local_certificate` (map) - map of all OIDs to their
+  values in the local certificate
+* `connection.oid_map_peer_certificate` (map) - map of all OIDs to their
+  values in the peer certificate
 
 
 #### Upstream connection properties
@@ -1803,6 +1807,10 @@ Returned `status` value is:
   the peer certificate
 * `upstream.sha256_peer_certificate_digest` (string) - SHA256 digest of
   the peer certificate
+* `upstream.oid_map_local_certificate` (map) - map of all OIDs to their
+  values in the local certificate
+* `upstream.oid_map_peer_certificate` (map) - map of all OIDs to their
+  values in the peer certificate
 
 
 #### HTTP request properties
