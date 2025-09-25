@@ -75,6 +75,8 @@ This function is never called.
 
 Called when the Wasm module is first loaded.
 
+This function is always supported.
+
 
 #### `main`
 
@@ -89,6 +91,8 @@ Called when the Wasm module is first loaded.
 
 Called when the Wasm module is first loaded, after [`_initialize`].
 
+This function is always supported.
+
 
 #### `_start`
 
@@ -101,6 +105,31 @@ Called when the Wasm module is first loaded, after [`_initialize`].
 > This is called only if [`_initialize`] is not exported.
 
 Called when the Wasm module is first loaded.
+
+This function is always supported.
+
+
+### Functions exposed by the host
+
+#### `proxy_get_host_features`
+
+* params:
+  - `i32 (uint8_t **) return_serialized_features_data`
+  - `i32 (size_t *) return_serialized_features_size`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Retrieves a list of key-value pairs containing supported host features.
+
+Returned list (`return_serialized_features_data`,
+`return_serialized_features_size`) is [serialized].
+
+Returned `status` value is:
+- `OK` on success.
+- `INVALID_MEMORY_ACCESS` when `return_serialized_features_data` and/or
+  `return_serialized_features_size` point to invalid memory address.
+
+This function is always supported.
 
 
 ## Memory management
@@ -121,6 +150,8 @@ Plugin must return `memory_data` pointing to the start of the allocated
 memory.
 
 Returning `0` indicates failure.
+
+This function is always supported.
 
 
 #### `malloc`
@@ -161,6 +192,8 @@ When `parent_context_id` is `0` then a new plugin context is created,
 otherwise a new per-stream context is created and `parent_context_id`
 refers to the plugin context.
 
+This function is gated on [`HAS_CORE`] host feature.
+
 
 #### `proxy_on_done`
 
@@ -176,6 +209,8 @@ Plugin must return one of the following values:
 - `false` to indicate that the context is still being used,
   and that plugin is going to call [`proxy_done`] later to
   allow the host to finalize and delete that context.
+
+This function is gated on [`HAS_CORE`] host feature.
 
 
 #### `proxy_on_log`
@@ -193,6 +228,8 @@ This can be used e.g. for generating final log entries.
 It's called after `true` was returned from [`proxy_on_done`]
 or after a call to [`proxy_done`].
 
+This function is gated on [`HAS_CORE`] host feature.
+
 
 #### `proxy_on_delete`
 
@@ -206,6 +243,8 @@ the plugin should stop tracking it and remove all associated state.
 
 It's called after `true` was returned from [`proxy_on_done`]
 or after a call to [`proxy_done`].
+
+This function is gated on [`HAS_CORE`] host feature.
 
 
 ### Functions exposed by the host
@@ -226,6 +265,8 @@ Returned `status` value is:
 - `OK` on success.
 - `NOT_FOUND` when active context was not pending finalization.
 
+This function is gated on [`HAS_CORE`] host feature.
+
 
 #### `proxy_set_effective_context`
 
@@ -243,6 +284,8 @@ and/or [`proxy_on_queue_ready`] callbacks.
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `context_id`.
+
+This function is gated on [`HAS_CORE`] host feature.
 
 
 ## Configuration
@@ -267,6 +310,8 @@ Plugin must return one of the following values:
 - `false` to indicate that the configuration processing failed, and that
   this instance of WasmVM shouldn't be used.
 
+This function is gated on [`HAS_CORE`] host feature.
+
 
 #### `proxy_on_configure`
 
@@ -286,6 +331,8 @@ Plugin must return one of the following values:
 - `true` to indicate that the configuration was processed successfully.
 - `false` to indicate that the configuration processing failed, and that
   this instance of plugin shouldn't be used.
+
+This function is gated on [`HAS_CORE`] host feature.
 
 
 ## Logging
@@ -308,6 +355,8 @@ Returned `status` value is:
 - `BAD_ARGUMENT` for unknown `log_level`.
 - `INVALID_MEMORY_ACCESS` when `message_data` and/or `message_size`
   point to invalid memory address.
+
+This function is gated on [`HAS_LOGGING`] host feature.
 
 
 #### `wasi_snapshot_preview1.fd_write`
@@ -332,6 +381,8 @@ Returned `errno` value is:
 - `FAULT` when `iovec`, `iovec_size` and/or `return_written_bytes`
   point to invalid memory address.
 
+This function is gated on [`HAS_WASI_PREVIEW1_CORE`] host feature.
+
 
 #### `proxy_get_log_level`
 
@@ -354,6 +405,8 @@ Returned `status` value is:
 - `OK` on success.
 - `INVALID_MEMORY_ACCESS` when `return_log_level` points to invalid
   memory address.
+
+This function is gated on [`HAS_LOGGING`] host feature.
 
 
 ## Clocks
@@ -383,6 +436,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `return_time` points to invalid memory
   address.
 
+This function is gated on [`HAS_CORE`] host feature.
+
 
 #### `wasi_snapshot_preview1.clock_time_get`
 
@@ -405,6 +460,8 @@ Returned `errno` value is:
 - `NOTSUP` for unknown or unsupported `clock_id`.
 - `FAULT` when `return_time` points to invalid memory address.
 
+This function is gated on [`HAS_WASI_PREVIEW1_CORE`] host feature.
+
 
 ## Timers
 
@@ -425,6 +482,8 @@ milliseconds. Setting `tick_period` to `0` disables the timer.
 Returned `status` value is:
 - `OK` on success.
 
+This function is gated on [`HAS_TIMERS`] host feature.
+
 
 ### Callbacks exposed by the Wasm module
 
@@ -439,6 +498,8 @@ Called on a timer every tick period.
 
 The tick period can be configured using
 [`proxy_set_tick_period_milliseconds`].
+
+This function is gated on [`HAS_TIMERS`] host feature.
 
 
 ## Randomness
@@ -460,6 +521,8 @@ Returned `errno` value is:
 - `INVAL` when the requested `buffer_size` is too large.
 - `FAULT` when `buffer` and/or `buffer_size` point to invalid memory
   address.
+
+This function is gated on [`HAS_WASI_PREVIEW1_CORE`] host feature.
 
 
 ## Environment variables
@@ -487,6 +550,8 @@ Returned `errno` value is:
 - `FAULT` when `return_num_elements` and/or `return_buffer_size`
   point to invalid memory address.
 
+This function is gated on [`HAS_WASI_PREVIEW1_CORE`] host feature.
+
 
 #### `wasi_snapshot_preview1.environ_get`
 
@@ -502,6 +567,8 @@ Returned `errno` value is:
 - `SUCCESS` on success.
 - `FAULT` when `return_array` and/or `return_buffer` point to
   invalid memory address.
+
+This function is gated on [`HAS_WASI_PREVIEW1_CORE`] host feature.
 
 
 ## Buffers
@@ -559,6 +626,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `value_data` and/or `value_size`
   point to invalid memory address.
 
+This function is gated on [`HAS_CORE`] host feature.
+
 
 #### `proxy_get_buffer_bytes`
 
@@ -582,6 +651,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `returned_value_data` and/or
   `returned_value_size` point to invalid memory address.
 
+This function is gated on [`HAS_CORE`] host feature.
+
 
 #### `proxy_get_buffer_status`
 
@@ -600,6 +671,8 @@ Returned `status` value is:
 - `NOT_FOUND` when the requested `buffer_id` isn't available.
 - `INVALID_MEMORY_ACCESS` when `return_buffer_size` and/or
   `return_unused` point to invalid memory address.
+
+This function is gated on [`HAS_CORE`] host feature.
 
 
 ## HTTP fields
@@ -652,6 +725,10 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `return_serialized_pairs_size` points to
   invalid memory address.
 
+This function is gated on [`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`],
+[`HAS_HTTP_CALLS`], [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
+host features.
+
 
 #### `proxy_get_header_map_pairs`
 
@@ -673,6 +750,10 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `return_serialized_pairs_data` and/or
   `return_serialized_pairs_size` point to invalid memory address.
 
+This function is gated on [`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`],
+[`HAS_HTTP_CALLS`], [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
+host features.
+
 
 #### `proxy_set_header_map_pairs`
 
@@ -691,6 +772,9 @@ Returned `status` value is:
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `serialized_pairs_data` and/or
   `serialized_pairs_size` point to invalid memory address.
+
+This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
+host features.
 
 
 #### `proxy_get_header_map_value`
@@ -715,6 +799,10 @@ Returned `status` value is:
   `return_value_data` and/or `return_value_size` point to
   invalid memory address.
 
+This function is gated on [`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`],
+[`HAS_HTTP_CALLS`], [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
+host features.
+
 
 #### `proxy_add_header_map_value`
 
@@ -735,6 +823,9 @@ Returned `status` value is:
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`, `value_data`
   and/or `value_size` point to invalid memory address.
+
+This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
+host features.
 
 
 #### `proxy_replace_header_map_value`
@@ -757,6 +848,9 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`, `value_data`
   and/or `value_size` point to invalid memory address.
 
+This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
+host features.
+
 
 #### `proxy_remove_header_map_value`
 
@@ -774,6 +868,9 @@ Returned `status` value is:
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `key_data` and/or `key_size` point to
   invalid memory address.
+
+This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
+host features.
 
 
 ## Common HTTP and TCP stream operations
@@ -795,6 +892,9 @@ Returned `status` value is:
 - `UNIMPLEMENTED` when continuation of the requested `stream_type`
   is not supported.
 
+This function is gated on [`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`],
+[`HAS_TCP_FILTER`] and/or [`HAS_TCP_WITH_PAYLOAD`] host features.
+
 
 #### `proxy_close_stream`
 
@@ -808,6 +908,9 @@ Closes or resets `stream_type`.
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `stream_type`.
+
+This function is gated on [`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`],
+[`HAS_TCP_FILTER`] and/or [`HAS_TCP_WITH_PAYLOAD`] host features.
 
 
 #### `proxy_get_status`
@@ -829,6 +932,9 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `return_status_code`,
   `return_status_message_data` and/or `return_status_message_size`
   point to invalid memory address.
+
+This function is gated on [`HAS_HTTP_CALLS`], [`HAS_GRPC_CALLS`]
+and/or [`HAS_GRPC_STREAMS`] host features.
 
 
 ## TCP streams
@@ -857,6 +963,9 @@ Called when a new connection is established.
 Plugin must return one of the following values:
 - `CONTINUE` to allow the new connection to be established.
 - `PAUSE` to pause processing of the new connection.
+
+This function is gated on [`HAS_TCP_FILTER`] and/or [`HAS_TCP_WITH_PAYLOAD`]
+host features.
 
 
 #### `proxy_on_downstream_data`
@@ -887,6 +996,8 @@ Plugin must return one of the following values:
 - `CONTINUE` to forward `DOWNSTREAM_DATA` buffer upstream.
 - `PAUSE` to pause processing.
 
+This function is gated on [`HAS_TCP_WITH_PAYLOAD`] host feature.
+
 
 #### `proxy_on_downstream_connection_close`
 
@@ -900,6 +1011,8 @@ Called when downstream connection is closed.
 
 The `peer_type` should describe whether this was initiated by a `LOCAL`
 or `REMOTE` peer, but this value might also be `UNKNOWN`.
+
+This function is gated on [`HAS_TCP_WITH_PAYLOAD`] host feature.
 
 
 #### `proxy_on_upstream_data`
@@ -930,6 +1043,8 @@ Plugin must return one of the following values:
 - `CONTINUE` to forward `UPSTREAM_DATA` buffer downstream.
 - `PAUSE` to pause processing.
 
+This function is gated on [`HAS_TCP_WITH_PAYLOAD`] host feature.
+
 
 #### `proxy_on_upstream_connection_close`
 
@@ -943,6 +1058,8 @@ Called when upstream connection is closed.
 
 The `peer_type` should describe whether this was initiated by a `LOCAL`
 or `REMOTE` peer, but this value might also be `UNKNOWN`.
+
+This function is gated on [`HAS_TCP_WITH_PAYLOAD`] host feature.
 
 
 ## HTTP streams
@@ -985,6 +1102,9 @@ Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_HEADERS` fields downstream.
 - `PAUSE` to pause processing.
 
+This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
+host features.
+
 
 #### `proxy_on_request_body`
 
@@ -1017,6 +1137,8 @@ Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_BODY` buffer upstream.
 - `PAUSE` to pause processing.
 
+This function is gated on [`HAS_HTTP_WITH_BODY`] host feature.
+
 
 #### `proxy_on_request_trailers`
 
@@ -1047,6 +1169,8 @@ a HTTP response can be sent using [`proxy_send_local_response`].
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_TRAILERS` fields downstream.
 - `PAUSE` to pause processing.
+
+This function is gated on [`HAS_HTTP_WITH_BODY`] host feature.
 
 
 #### `proxy_on_response_headers`
@@ -1080,6 +1204,9 @@ Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_RESPONSE_HEADERS` fields downstream.
 - `PAUSE` to pause processing.
 
+This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
+host features.
+
 
 #### `proxy_on_response_body`
 
@@ -1109,6 +1236,8 @@ Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_RESPONSE_BODY` buffer downstream.
 - `PAUSE` to pause processing.
 
+This function is gated on [`HAS_HTTP_WITH_BODY`] host feature.
+
 
 #### `proxy_on_response_trailers`
 
@@ -1136,6 +1265,8 @@ or closed using [`proxy_close_stream`] with `stream_type` set to
 Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_RESPONSE_TRAILERS` fields downstream.
 - `PAUSE` to pause processing.
+
+This function is gated on [`HAS_HTTP_WITH_BODY`] host feature.
 
 
 ### Functions exposed by the host
@@ -1166,6 +1297,9 @@ Returned `status` value is:
   `status_code_details_size`, `body_data`, `body_size`,
   `serialized_headers_data` and/or `serialized_headers_size`
   point to invalid memory address.
+
+This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
+host features.
 
 
 ## HTTP calls
@@ -1206,6 +1340,8 @@ Returned `status` value is:
   `body_size`, `serialized_trailers_data`, `serialized_trailers_size`
   and/or `return_call_id` point to invalid memory address.
 
+This function is gated on [`HAS_HTTP_CALLS`] host feature.
+
 
 ### Callbacks exposed by the Wasm module
 
@@ -1238,6 +1374,8 @@ All `num_trailers` trailers can be retrieved using
 [`proxy_get_header_map_pairs`]
 or individually [`proxy_get_header_map_value`]
 with `map_id` set to `HTTP_CALL_RESPONSE_TRAILERS`.
+
+This function is gated on [`HAS_HTTP_CALLS`] host feature.
 
 
 ## gRPC calls
@@ -1286,6 +1424,8 @@ Returned `status` value is:
   `serialized_initial_metadata_size`, `message_data`, `message_size`
   and/or `return_call_id` point to invalid memory address.
 
+This function is gated on [`HAS_GRPC_CALLS`] host feature.
+
 
 #### `proxy_grpc_stream`
 
@@ -1329,6 +1469,8 @@ Returned `status` value is:
   `serialized_initial_metadata_size` and/or `return_stream_id`
   point to invalid memory address.
 
+This function is gated on [`HAS_GRPC_STREAMS`] host feature.
+
 
 #### `proxy_grpc_send`
 
@@ -1350,6 +1492,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `message_data` and/or `message_size`
   point to invalid memory address.
 
+This function is gated on [`HAS_GRPC_STREAMS`] host feature.
+
 
 #### `proxy_grpc_cancel`
 
@@ -1366,6 +1510,9 @@ Returned `status` value is:
 - `BAD_ARGUMENT` for invalid `call_or_stream_id`.
 - `NOT_FOUND` for unknown `call_or_stream_id`.
 
+This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
+host features.
+
 
 #### `proxy_grpc_close`
 
@@ -1381,6 +1528,9 @@ Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for invalid `call_or_stream_id`.
 - `NOT_FOUND` for unknown `call_or_stream_id`.
+
+This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
+host features.
 
 
 ### Callbacks exposed by the Wasm module
@@ -1402,6 +1552,9 @@ All `num_elements` elements can be retrieved using
 [`proxy_get_header_map_value`] with `map_id` set to
 `GRPC_CALL_INITIAL_METADATA`.
 
+This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
+host features.
+
 
 #### `proxy_on_grpc_receive`
 
@@ -1417,6 +1570,9 @@ Called when the response gRPC message for `call_id` sent using
 
 Message (of `message_size`) can be retrieved using
 [`proxy_get_buffer_bytes`] with `buffer_id` set to `GRPC_CALL_MESSAGE`.
+
+This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
+host features.
 
 
 #### `proxy_on_grpc_receive_trailing_metadata`
@@ -1436,6 +1592,9 @@ All `num_elements` elements can be retrieved using
 [`proxy_get_header_map_value`] with `map_id` set to
 `GRPC_CALL_TRAILING_METADATA`.
 
+This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
+host features.
+
 
 #### `proxy_on_grpc_close`
 
@@ -1450,6 +1609,9 @@ Called when gRPC call or stream `call_id` opened using
 [`proxy_grpc_call`] or [`proxy_grpc_stream`] is received.
 
 gRPC status message can be retrieved using [`proxy_get_status`].
+
+This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
+host features.
 
 
 ## Shared Key-Value Store
@@ -1481,6 +1643,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`, `value_data`,
   `value_size` and/or `cas` point to invalid memory address.
 
+This function is gated on [`HAS_KEY_VALUE_STORES`] host feature.
+
 
 #### `proxy_get_shared_data`
 
@@ -1505,6 +1669,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`,
   `return_value_data`, `return_value_size` and/or `return_cas`
   point to invalid memory address.
+
+This function is gated on [`HAS_KEY_VALUE_STORES`] host feature.
 
 
 ## Shared Queues
@@ -1534,6 +1700,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `name_data`, `name_size`
   and/or `return_queue_id` point to invalid memory address.
 
+This function is gated on [`HAS_SHARED_QUEUES`] host feature.
+
 
 #### `proxy_resolve_shared_queue`
 
@@ -1559,6 +1727,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `vm_id_data`, `vm_id_size`, `name_data`,
   `name_size` and/or `return_queue_id` point to invalid memory address.
 
+This function is gated on [`HAS_SHARED_QUEUES`] host feature.
+
 
 #### `proxy_enqueue_shared_queue`
 
@@ -1577,6 +1747,8 @@ Returned `status` value is:
 - `NOT_FOUND` when the requested `queue_id` was not found.
 - `INVALID_MEMORY_ACCESS` when `value_data` and/or `value_size` point
   to invalid memory address.
+
+This function is gated on [`HAS_SHARED_QUEUES`] host feature.
 
 
 #### `proxy_dequeue_shared_queue`
@@ -1598,6 +1770,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `return_value_data`
   and/or `return_value_size` point to invalid memory address.
 
+This function is gated on [`HAS_SHARED_QUEUES`] host feature.
+
 
 ### Callbacks exposed by the Wasm module
 
@@ -1609,6 +1783,8 @@ Returned `status` value is:
   - none
 
 Called when a new item is enqueued on the queue `queue_id`.
+
+This function is gated on [`HAS_SHARED_QUEUES`] host feature.
 
 
 ## Metrics
@@ -1638,6 +1814,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `name_data`, `name_size`
   and/or `return_metric_id` point to invalid memory address.
 
+This function is gated on [`HAS_METRICS`] host feature.
+
 
 #### `proxy_record_metric`
 
@@ -1652,6 +1830,8 @@ Sets metric `metric_id` to the `value`.
 Returned `status` value is:
 - `OK` on success.
 - `NOT_FOUND` when the requested `metric_id` was not found.
+
+This function is gated on [`HAS_METRICS`] host feature.
 
 
 #### `proxy_increment_metric`
@@ -1670,6 +1850,8 @@ Returned `status` value is:
 - `BAD_ARGUMENT` when the requested `delta` cannot be applied to
   `metric_id` (e.g. trying to decrement counter).
 
+This function is gated on [`HAS_METRICS`] host feature.
+
 
 #### `proxy_get_metric`
 
@@ -1686,6 +1868,8 @@ Returned `status` value is:
 - `NOT_FOUND` when the requested `metric_id` was not found.
 - `INVALID_MEMORY_ACCESS` when `return_value` points to invalid memory
   address.
+
+This function is gated on [`HAS_METRICS`] host feature.
 
 
 ## Properties
@@ -1718,6 +1902,8 @@ Returned `status` value is:
   `return_value_data` and/or `return_value_size` point to invalid
   memory address.
 
+This function is gated on [`HAS_PROPERTIES`] host feature.
+
 
 #### `proxy_set_property`
 
@@ -1737,6 +1923,8 @@ Returned `status` value is:
 - `NOT_FOUND` when there was no property found at the requested `path`.
 - `INVALID_MEMORY_ACCESS` when `path_data`, `path_size`, `value_data`
   and/or `value_size` point to invalid memory address.
+
+This function is gated on [`HAS_PROPERTIES`] host feature.
 
 
 ### Well-known properties
@@ -1852,6 +2040,8 @@ Returned `status` value is:
   `arguments_data`, `arguments_size`, `return_results_data`
   and/or `return_results_size` point to invalid memory address.
 
+This function is gated on [`HAS_CUSTOM_FUNCTIONS`] host feature.
+
 
 ### Callbacks exposed by the Wasm module
 
@@ -1869,6 +2059,8 @@ Called when a registered foreign callback `function_id` is called.
 Its arguments (of `arguments_size`) can be retrieved using
 [`proxy_get_buffer_bytes`] with `buffer_id` set to
 `FOREIGN_FUNCTION_ARGUMENTS`.
+
+This function is gated on [`HAS_CUSTOM_FUNCTIONS`] host feature.
 
 
 ## Unimplemented WASI functions
@@ -1895,6 +2087,8 @@ Returned `errno` value is:
 - `FAULT` when `return_argc` and/or `return_argv_buffer_size` point to
   invalid memory address.
 
+This function is always supported.
+
 
 #### `wasi_snapshot_preview1.args_get`
 
@@ -1909,6 +2103,8 @@ in [`wasi_snapshot_preview1.args_sizes_get`].
 
 Returned `errno` value is:
 - `SUCCESS` on success.
+
+This function is always supported.
 
 
 #### `wasi_snapshot_preview1.proc_exit`
@@ -1925,6 +2121,17 @@ This function is never called.
 
 > **Note**
 > The encoding of integers is little-endian.
+
+
+#### List with host features
+
+A non-empty feature list is serialized as:
+- 32-bit integer containing the number of features in the list,
+- a series of pairs of 32-bit integers containing the feature identifier
+  and its value.
+
+An empty map may be represented either as an empty value (`size=0`), or as
+a single `0x00` byte (`size=1`).
 
 
 #### Maps with HTTP fields and/or gRPC metadata
@@ -2084,6 +2291,23 @@ changes to unrelated connections/requests.
 [integration]: #Integration
 [memory management]: #Memory-management
 [serialized]: #Serialization
+
+[`HAS_CORE`]: ./HOST_FEATURES.md
+[`HAS_LOGGING`]: ./HOST_FEATURES.md
+[`HAS_HTTP_HEADERS`]: ./HOST_FEATURES.md
+[`HAS_HTTP_WITH_BODY`]: ./HOST_FEATURES.md
+[`HAS_HTTP_CALLS`]: ./HOST_FEATURES.md
+[`HAS_GRPC_CALLS`]: ./HOST_FEATURES.md
+[`HAS_GRPC_STREAMS`]: ./HOST_FEATURES.md
+[`HAS_TCP_FILTER`]: ./HOST_FEATURES.md
+[`HAS_TCP_WITH_PAYLOAD`]: ./HOST_FEATURES.md
+[`HAS_KEY_VALUE_STORES`]: ./HOST_FEATURES.md
+[`HAS_SHARED_QUEUES`]: ./HOST_FEATURES.md
+[`HAS_TIMERS`]: ./HOST_FEATURES.md
+[`HAS_METRICS`]: ./HOST_FEATURES.md
+[`HAS_PROPERTIES`]: ./HOST_FEATURES.md
+[`HAS_CUSTOM_FUNCTIONS`]: ./HOST_FEATURES.md
+[`HAS_WASI_PREVIEW1_CORE`]: ./HOST_FEATURES.md
 
 [`proxy_abi_version_0_x_x`]: #proxy_abi_version_0_x_x
 [`_initialize`]: #_initialize
