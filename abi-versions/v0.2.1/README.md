@@ -1950,11 +1950,14 @@ a single `0x00` byte (`size=1`).
 #### Property path names
 
 Path data for the [proxy_get_property] and [property_set_property] hostcalls
-consists of a sequence of path segments. The path segments are null-terminated
-and then concatenated in sequence to form the `path_data` argument.
+consists of a sequence of path segments. The path segments are separated by
+`NULL` (`0x00`) characters.
 
 e.g. the path segments `["foo", "bar"]` would be serialized as:
--  `0x66`, `0x6f`, `0x6f`, `0x00`, `0x62`, `0x61`, `0x72`, `0x00`
+-  `0x66`, `0x6f`, `0x6f`, `0x00`, `0x62`, `0x61`, `0x72`
+
+Host implementations should tolerate a `NULL` character at the end of the
+combined path data string, if present.
 
 # Security Considerations
 
