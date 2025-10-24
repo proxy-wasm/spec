@@ -1959,6 +1959,7 @@ e.g. the path segments `["foo", "bar"]` would be serialized as:
 Host implementations should tolerate a `NULL` character at the end of the
 combined path data string, if present.
 
+
 # Security Considerations
 
 ## External resources
