@@ -1507,6 +1507,30 @@ Returned `status` value is:
   point to invalid memory address.
 
 
+#### `proxy_exists_shared_data`
+
+* params:
+  - `i32 (uint32_t) kvstore_id`
+  - `i32 (const char *) key_data`
+  - `i32 (size_t) key_size`
+  - `i32 (uint32_t *) return_cas`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Returns `OK` if value identified by the key (`key_data`, `key_value`)
+exists in shared key-value store `kvstore_id`.
+
+The compare-and-swap value (`return_cas`) can be used for atomically
+updating this value using [`proxy_set_shared_data`].
+
+Returned `status` value is:
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `kvstore_id`.
+- `NOT_FOUND` when the requested key was not found.
+- `INVALID_MEMORY_ACCESS` when `key_data`, `key_size` and/or `return_cas`
+  point to invalid memory address.
+
+
 ## Shared Queues
 
 ### Functions exposed by the host
