@@ -1471,6 +1471,33 @@ gRPC status message can be retrieved using [`proxy_get_status`].
 
 ### Functions exposed by the host
 
+#### `proxy_open_kvstore`
+
+* params:
+  - `i32 (const char*) kvstore_name_data`
+  - `i32 (size_t) kvstore_name_size`
+  - `i32 (bool) create_if_not_exist`
+  - `i32 (uint32_t*) return_kvstore_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Opens named key-value store (`kvstore_name_data`, `kvstore_name_size`).
+
+If `create_if_not_exist` is `true` and there is no shared key-value store with
+that name, then a new store will be created.
+
+Key's value can be set using `proxy_set_shared_data` and retrieved using
+`proxy_get_shared_data` from the key-value store using returned unique key-value
+store identifier (`return_kvstore_id`).
+
+Returned `status` value is:
+- `OK` on success.
+- `NOT_FOUND` when `create_if_not_exist` is `false` and no shared key-value
+  store with the given name exists.
+- `INVALID_MEMORY_ACCESS` when `kvstore_name_data`, `kvstore_name_size`
+  and/or `return_kvstore_id` point to invalid memory address.
+
+
 #### `proxy_set_shared_data`
 
 * params:
@@ -1524,6 +1551,20 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`,
   `return_value_data`, `return_value_size` and/or `return_cas`
   point to invalid memory address.
+
+
+#### `proxy_delete_kvstore`
+
+* params:
+  - `i32 (uint32_t) kvstore_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Deletes previously created shared key-value store (`kvstore_id`).
+
+Returned `status` value is:
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `kvstore_id`.
 
 
 ## Shared Queues
@@ -2183,8 +2224,10 @@ changes to unrelated connections/requests.
 [`proxy_on_grpc_receive`]: #proxy_on_grpc_receive
 [`proxy_on_grpc_receive_trailing_metadata`]: #proxy_on_grpc_receive_trailing_metadata
 [`proxy_on_grpc_close`]: #proxy_on_grpc_close
+[`proxy_open_kvstore`]: #proxy_open_kvstore
 [`proxy_set_shared_data`]: #proxy_set_shared_data
 [`proxy_get_shared_data`]: #proxy_get_shared_data
+[`proxy_delete_kvstore`]: #proxy_delete_kvstore
 [`proxy_register_shared_queue`]: #proxy_register_shared_queue
 [`proxy_resolve_shared_queue`]: #proxy_resolve_shared_queue
 [`proxy_enqueue_shared_queue`]: #proxy_enqueue_shared_queue
