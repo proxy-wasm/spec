@@ -1710,6 +1710,8 @@ Returned `status` value is:
 Retrieves value (`return_value_data`, `return_value_size`)
 of the property (`path_data`, `path_size`).
 
+`path_data` is a [serialized] list of path segments.
+
 Returned `status` value is:
 - `OK` on success.
 - `NOT_FOUND` when there was no property found at the requested `path`.
@@ -1731,6 +1733,8 @@ Returned `status` value is:
 
 Sets value of the property (`path_data`, `path_size`) to the provided
 value (`value_data`, `value_size`).
+
+`path_data` is a [serialized] list of path segments.
 
 Returned `status` value is:
 - `OK` on success.
@@ -1942,6 +1946,18 @@ e.g. the map `{{"a": "1"}, {"b": "22"}}` would be serialized as:
 
 An empty map may be represented either as an empty value (`size=0`), or as
 a single `0x00` byte (`size=1`).
+
+#### Property path names
+
+Path data for the [proxy_get_property] and [property_set_property] hostcalls
+consists of a sequence of path segments. The path segments are separated by
+`NULL` (`0x00`) characters.
+
+e.g. the path segments `["foo", "bar"]` would be serialized as:
+-  `0x66`, `0x6f`, `0x6f`, `0x00`, `0x62`, `0x61`, `0x72`
+
+Host implementations should tolerate a `NULL` character at the end of the
+combined path data string, if present.
 
 
 # Security Considerations
