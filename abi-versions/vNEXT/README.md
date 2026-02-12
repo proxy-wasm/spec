@@ -1563,6 +1563,10 @@ Returned `status` value is:
 
 ## Shared Queues
 
+> **Note** 
+> The default pre-opened shared queue can be accessed using `queue_id=0`.
+
+
 ### Functions exposed by the host
 
 #### `proxy_register_shared_queue`
