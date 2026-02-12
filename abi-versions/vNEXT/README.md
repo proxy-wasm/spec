@@ -1534,43 +1534,20 @@ Returned `status` value is:
 
 ### Functions exposed by the host
 
-#### `proxy_register_shared_queue`
+#### `proxy_open_shared_queue`
 
 * params:
-  - `i32 (const char *) name_data`
-  - `i32 (size_t) name_size`
+  - `i32 (const char *) queue_name_data`
+  - `i32 (size_t) queue_name_size`
+  - `i32 (bool) create_if_not_exist`
   - `i32 (uint32_t *) return_queue_id`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Registers shared queue under a name (`name_data`, `name_size`).
+Opens named queue (`queue_name_data`, `queue_name_size`).
 
-If the named queue already exists, then it's going to be opened
-instead of creating a new empty queue.
-
-Items can be enqueued/dequeued on the created/opened queue using
-[`proxy_enqueue_shared_queue`] and/or [`proxy_dequeue_shared_queue`]
-with `return_queue_id`.
-
-Returned `status` value is:
-- `OK` on success.
-- `INVALID_MEMORY_ACCESS` when `name_data`, `name_size`
-  and/or `return_queue_id` point to invalid memory address.
-
-
-#### `proxy_resolve_shared_queue`
-
-* params:
-  - `i32 (const char *) vm_id_data`
-  - `i32 (size_t) vm_id_size`
-  - `i32 (const char *) name_data`
-  - `i32 (size_t) name_size`
-  - `i32 (uint32_t *) return_queue_id`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-Resolves existing shared queue using the provided VM ID (`vm_id_data`,
-`vm_id_size`) and name (`name_data`, `name_size`).
+If `create_if_not_exist` is `true` and there is no shared queue with
+that name, then it will be created.
 
 Items can be enqueued/dequeued on the opened queue using
 [`proxy_enqueue_shared_queue`] and/or [`proxy_dequeue_shared_queue`]
@@ -1620,6 +1597,18 @@ Returned `status` value is:
 - `EMPTY` when there is nothing to dequeue from the requested queue.
 - `INVALID_MEMORY_ACCESS` when `return_value_data`
   and/or `return_value_size` point to invalid memory address.
+
+
+#### `proxy_delete_shared_queue`
+
+* params:
+  - `i32 (uint32_t) queue_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Deletes previously created shared queue (`queue_id`).
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `queue_id`.
 
 
 ### Callbacks exposed by the Wasm module
@@ -2185,10 +2174,10 @@ changes to unrelated connections/requests.
 [`proxy_on_grpc_close`]: #proxy_on_grpc_close
 [`proxy_set_shared_data`]: #proxy_set_shared_data
 [`proxy_get_shared_data`]: #proxy_get_shared_data
-[`proxy_register_shared_queue`]: #proxy_register_shared_queue
-[`proxy_resolve_shared_queue`]: #proxy_resolve_shared_queue
+[`proxy_open_shared_queue`]: #proxy_open_shared_queue
 [`proxy_enqueue_shared_queue`]: #proxy_enqueue_shared_queue
 [`proxy_dequeue_shared_queue`]: #proxy_dequeue_shared_queue
+[`proxy_delete_shared_queue`]: #proxy_delete_shared_queue
 [`proxy_on_queue_ready`]: #proxy_on_queue_ready
 [`proxy_define_metric`]: #proxy_define_metric
 [`proxy_record_metric`]: #proxy_record_metric
