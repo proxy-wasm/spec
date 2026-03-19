@@ -20,4 +20,10 @@
 |   0x0F01   | `HAS_WASI_PREVIEW1_CORE` | When `1`, all baseline functions considered essential from WASI Preview1 are supported.            |     No     |
 
 
-Identifiers below 0x2000 are reserved for standardized features and options. Random numbers above that range should be used for private extensions.
+Identifiers below 0x2000 are reserved for standardized features and options.
+
+Numbers above that range are considered private and can be used without assignment in the registry.
+
+Random number in the private range should be used for private extensions and features under active development.
+
+Once the feature is finalized and implemented in a subset of hosts and SDKs, it will be assigned an ID in the standardized range.
