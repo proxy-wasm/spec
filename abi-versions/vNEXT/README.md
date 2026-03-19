@@ -228,27 +228,6 @@ Returned `status` value is:
 - `NOT_FOUND` when active context was not pending finalization.
 
 
-#### `proxy_set_effective_context`
-
-* params:
-  - `i32 (uint32_t) context_id`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-> **Warning**
-> This function has been deprecated in favor of explicit context IDs.
-
-Changes the effective context to `context_id`.
-
-This can be used to change active context, e.g. during
-[`proxy_on_http_call_response`], [`proxy_on_grpc_receive`]
-and/or [`proxy_on_queue_ready`] callbacks.
-
-Returned `status` value is:
-- `OK` on success.
-- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
-
-
 ## Configuration
 
 ### Callbacks exposed by the Wasm module
