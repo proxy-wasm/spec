@@ -751,29 +751,14 @@ Returned `status` value is:
 Adds or replaces key's (`key_data`, `key_value`) value with the provided
 value (`value_data`, `value_size`) in the map `map_id`.
 
+If the `value_data` is `0`, then the key (`key_data`, `key_size`) will be
+removed from the map `map_id`.
+
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`, `value_data`
   and/or `value_size` point to invalid memory address.
-
-
-#### `proxy_remove_header_map_value`
-
-* params:
-  - `i32 (`[`proxy_map_type_t`]`) map_id`
-  - `i32 (const char *) key_data`
-  - `i32 (size_t) key_size`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-Removes the key (`key_data`, `key_value`) from the map `map_id`.
-
-Returned `status` value is:
-- `OK` on success (including the case when the requested key didn't exist).
-- `BAD_ARGUMENT` for unknown `map_id`.
-- `INVALID_MEMORY_ACCESS` when `key_data` and/or `key_size` point to
-  invalid memory address.
 
 
 ## Common HTTP and TCP stream operations
@@ -970,9 +955,8 @@ All `num_headers` headers can be retrieved and/or modified using
 with `map_id` set to `HTTP_REQUEST_HEADERS`.
 
 Individual HTTP request headers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`],
-[`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
-with `map_id` set to `HTTP_REQUEST_HEADERS`.
+[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`] and/or
+[`proxy_add_header_map_value`] with `map_id` set to `HTTP_REQUEST_HEADERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
@@ -1033,9 +1017,8 @@ All `num_trailers` trailers can be retrieved and/or modified using
 with `map_id` set to `HTTP_REQUEST_TRAILERS`.
 
 Individual HTTP request trailers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`],
-[`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
-with `map_id` set to `HTTP_REQUEST_TRAILERS`.
+[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`] and/or
+[`proxy_add_header_map_value`] with `map_id` set to `HTTP_REQUEST_TRAILERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
@@ -1065,9 +1048,8 @@ All `num_headers` headers can be retrieved and/or modified using
 with `map_id` set to `HTTP_RESPONSE_HEADERS`.
 
 Individual headers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`],
-[`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
-with `map_id` set to `HTTP_RESPONSE_HEADERS`.
+[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`] and/or
+[`proxy_add_header_map_value`] with `map_id` set to `HTTP_RESPONSE_HEADERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
@@ -1125,9 +1107,8 @@ All `num_trailers` trailers can be retrieved and/or modified using
 with `map_id` set to `HTTP_RESPONSE_TRAILERS`.
 
 Individual trailers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`],
-[`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
-with `map_id` set to `HTTP_RESPONSE_TRAILERS`.
+[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`] and/or
+[`proxy_add_header_map_value`] with `map_id` set to `HTTP_RESPONSE_TRAILERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
@@ -2129,7 +2110,6 @@ changes to unrelated connections/requests.
 [`proxy_get_header_map_value`]: #proxy_get_header_map_value
 [`proxy_add_header_map_value`]: #proxy_add_header_map_value
 [`proxy_replace_header_map_value`]: #proxy_replace_header_map_value
-[`proxy_remove_header_map_value`]: #proxy_remove_header_map_value
 [`proxy_continue_stream`]: #proxy_continue_stream
 [`proxy_close_stream`]: #proxy_close_stream
 [`proxy_on_new_connection`]: #proxy_on_new_connection
