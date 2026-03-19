@@ -1563,7 +1563,7 @@ Returned `status` value is:
 
 ## Shared Queues
 
-> **Note** 
+> **Note**
 > The default pre-opened shared queue can be accessed using `queue_id=0`.
 
 
