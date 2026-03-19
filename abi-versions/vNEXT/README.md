@@ -1470,6 +1470,9 @@ gRPC status message can be retrieved using [`proxy_get_status`].
 Sets shared data identified by the key (`key_data`, `key_value`)
 to the value (`value_data`, `value_size`).
 
+If the `value_data` is `0`, then the key (`key_data`, `key_size`) will be
+deleted from the shared key-value store (`kvstore_id`).
+
 If the compare-and-swap value (`cas`) is set to a non-zero value,
 then it must match the host's compare-and-swap value in order for
 the update to succeed.
@@ -1504,32 +1507,6 @@ Returned `status` value is:
 - `NOT_FOUND` when the requested key was not found.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`,
   `return_value_data`, `return_value_size` and/or `return_cas`
-  point to invalid memory address.
-
-
-#### `proxy_remove_shared_key`
-
-* params:
-  - `i32 (uint32_t) kvstore_id`
-  - `i32 (const char*) key_data`
-  - `i32 (size_t) key_size`
-  - `i32 (uint32_t) cas`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-Removes the key (`key_data`, `key_size`) from a shared key-value store
-(`kvstore_id`).
-
-If the compare-and-swap value (`cas`) is set to a non-zero value,
-then it must match the host's compare-and-swap value in order for
-the update to succeed.
-
-Returned `status` value is:
-- `OK` on success.
-- `UNKNOWN_RESOURCE_ID` for unknown `kvstore_id`.
-- `CAS_MISMATCH` when `cas` doesn't match host's compare-and-swap
-  value.
-- `INVALID_MEMORY_ACCESS` when `key_data`, `key_size` and/or `cas`
   point to invalid memory address.
 
 
@@ -2184,7 +2161,6 @@ changes to unrelated connections/requests.
 [`proxy_on_grpc_close`]: #proxy_on_grpc_close
 [`proxy_set_shared_data`]: #proxy_set_shared_data
 [`proxy_get_shared_data`]: #proxy_get_shared_data
-[`proxy_remove_shared_key`]: #proxy_remove_shared_key
 [`proxy_register_shared_queue`]: #proxy_register_shared_queue
 [`proxy_resolve_shared_queue`]: #proxy_resolve_shared_queue
 [`proxy_enqueue_shared_queue`]: #proxy_enqueue_shared_queue
