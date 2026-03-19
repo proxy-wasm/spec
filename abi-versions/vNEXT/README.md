@@ -1496,6 +1496,9 @@ Returned `status` value is:
 Returns shared value (`return_value`) identified by the key (`key_data`,
 `key_value`).
 
+The `return_value` `0` can be used to check the existence of the key
+(`key_data`, `key_value`) without retrieving its value.
+
 The compare-and-swap value (`return_cas`) can be used for atomically
 updating this value using [`proxy_set_shared_data`].
 
@@ -1504,30 +1507,6 @@ Returned `status` value is:
 - `NOT_FOUND` when the requested key was not found.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`,
   `return_value_data`, `return_value_size` and/or `return_cas`
-  point to invalid memory address.
-
-
-#### `proxy_exists_shared_data`
-
-* params:
-  - `i32 (uint32_t) kvstore_id`
-  - `i32 (const char *) key_data`
-  - `i32 (size_t) key_size`
-  - `i32 (uint32_t *) return_cas`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-Returns `OK` if value identified by the key (`key_data`, `key_value`)
-exists in shared key-value store `kvstore_id`.
-
-The compare-and-swap value (`return_cas`) can be used for atomically
-updating this value using [`proxy_set_shared_data`].
-
-Returned `status` value is:
-- `OK` on success.
-- `UNKNOWN_RESOURCE_ID` for unknown `kvstore_id`.
-- `NOT_FOUND` when the requested key was not found.
-- `INVALID_MEMORY_ACCESS` when `key_data`, `key_size` and/or `return_cas`
   point to invalid memory address.
 
 
