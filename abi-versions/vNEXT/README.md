@@ -725,9 +725,9 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `return_serialized_pairs_size` points to
   invalid memory address.
 
-This function is gated on [`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`],
-[`HAS_HTTP_CALLS`], [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_HTTP_CALLS`],
+[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
 
 
 #### `proxy_get_header_map_pairs`
@@ -750,9 +750,9 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `return_serialized_pairs_data` and/or
   `return_serialized_pairs_size` point to invalid memory address.
 
-This function is gated on [`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`],
-[`HAS_HTTP_CALLS`], [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_HTTP_CALLS`],
+[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
 
 
 #### `proxy_set_header_map_pairs`
@@ -773,8 +773,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `serialized_pairs_data` and/or
   `serialized_pairs_size` point to invalid memory address.
 
-This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`] or [`HAS_HTTP_WITH_BODY`].
 
 
 #### `proxy_get_header_map_value`
@@ -799,9 +799,9 @@ Returned `status` value is:
   `return_value_data` and/or `return_value_size` point to
   invalid memory address.
 
-This function is gated on [`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`],
-[`HAS_HTTP_CALLS`], [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_HTTP_CALLS`],
+[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
 
 
 #### `proxy_add_header_map_value`
@@ -824,8 +824,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`, `value_data`
   and/or `value_size` point to invalid memory address.
 
-This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`] or [`HAS_HTTP_WITH_BODY`].
 
 
 #### `proxy_replace_header_map_value`
@@ -848,8 +848,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`, `value_data`
   and/or `value_size` point to invalid memory address.
 
-This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`] or [`HAS_HTTP_WITH_BODY`].
 
 
 #### `proxy_remove_header_map_value`
@@ -869,8 +869,8 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `key_data` and/or `key_size` point to
   invalid memory address.
 
-This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`] or [`HAS_HTTP_WITH_BODY`].
 
 
 ## Common HTTP and TCP stream operations
@@ -892,8 +892,9 @@ Returned `status` value is:
 - `UNIMPLEMENTED` when continuation of the requested `stream_type`
   is not supported.
 
-This function is gated on [`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`],
-[`HAS_TCP_FILTER`] and/or [`HAS_TCP_WITH_PAYLOAD`] host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_TCP_FILTER`]
+or [`HAS_TCP_WITH_PAYLOAD`].
 
 
 #### `proxy_close_stream`
@@ -909,8 +910,9 @@ Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for unknown `stream_type`.
 
-This function is gated on [`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`],
-[`HAS_TCP_FILTER`] and/or [`HAS_TCP_WITH_PAYLOAD`] host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_TCP_FILTER`]
+or [`HAS_TCP_WITH_PAYLOAD`].
 
 
 #### `proxy_get_status`
@@ -933,8 +935,8 @@ Returned `status` value is:
   `return_status_message_data` and/or `return_status_message_size`
   point to invalid memory address.
 
-This function is gated on [`HAS_HTTP_CALLS`], [`HAS_GRPC_CALLS`]
-and/or [`HAS_GRPC_STREAMS`] host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_CALLS`], [`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
 
 
 ## TCP streams
@@ -964,8 +966,8 @@ Plugin must return one of the following values:
 - `CONTINUE` to allow the new connection to be established.
 - `PAUSE` to pause processing of the new connection.
 
-This function is gated on [`HAS_TCP_FILTER`] and/or [`HAS_TCP_WITH_PAYLOAD`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_TCP_FILTER`] or [`HAS_TCP_WITH_PAYLOAD`].
 
 
 #### `proxy_on_downstream_data`
@@ -1102,8 +1104,8 @@ Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_REQUEST_HEADERS` fields downstream.
 - `PAUSE` to pause processing.
 
-This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`] or [`HAS_HTTP_WITH_BODY`].
 
 
 #### `proxy_on_request_body`
@@ -1204,8 +1206,8 @@ Plugin must return one of the following values:
 - `CONTINUE` to forward `HTTP_RESPONSE_HEADERS` fields downstream.
 - `PAUSE` to pause processing.
 
-This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`] or [`HAS_HTTP_WITH_BODY`].
 
 
 #### `proxy_on_response_body`
@@ -1298,8 +1300,8 @@ Returned `status` value is:
   `serialized_headers_data` and/or `serialized_headers_size`
   point to invalid memory address.
 
-This function is gated on [`HAS_HTTP_HEADERS`] and/or [`HAS_HTTP_WITH_BODY`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_HTTP_HEADERS`] or [`HAS_HTTP_WITH_BODY`].
 
 
 ## HTTP calls
@@ -1529,8 +1531,8 @@ Returned `status` value is:
 - `BAD_ARGUMENT` for invalid `call_or_stream_id`.
 - `NOT_FOUND` for unknown `call_or_stream_id`.
 
-This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
 
 
 ### Callbacks exposed by the Wasm module
@@ -1552,8 +1554,8 @@ All `num_elements` elements can be retrieved using
 [`proxy_get_header_map_value`] with `map_id` set to
 `GRPC_CALL_INITIAL_METADATA`.
 
-This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
 
 
 #### `proxy_on_grpc_receive`
@@ -1571,8 +1573,8 @@ Called when the response gRPC message for `call_id` sent using
 Message (of `message_size`) can be retrieved using
 [`proxy_get_buffer_bytes`] with `buffer_id` set to `GRPC_CALL_MESSAGE`.
 
-This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
 
 
 #### `proxy_on_grpc_receive_trailing_metadata`
@@ -1592,8 +1594,8 @@ All `num_elements` elements can be retrieved using
 [`proxy_get_header_map_value`] with `map_id` set to
 `GRPC_CALL_TRAILING_METADATA`.
 
-This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
 
 
 #### `proxy_on_grpc_close`
@@ -1610,8 +1612,8 @@ Called when gRPC call or stream `call_id` opened using
 
 gRPC status message can be retrieved using [`proxy_get_status`].
 
-This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
 
 
 ## Shared Key-Value Store
