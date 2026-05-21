@@ -730,8 +730,9 @@ Returned `status` value is:
   invalid memory address.
 
 This function is available if any of the following features is enabled:
-[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_HTTP_CALLS`],
-[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
+[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_CALLOUTS_HTTP_BUFFERED`],
+[`HAS_CALLOUTS_HTTP_STREAMING`], [`HAS_CALLOUTS_GRPC_BUFFERED`]
+or [`HAS_CALLOUTS_GRPC_STREAMING`].
 
 
 #### `proxy_get_header_map_pairs`
@@ -755,8 +756,9 @@ Returned `status` value is:
   `return_serialized_pairs_size` point to invalid memory address.
 
 This function is available if any of the following features is enabled:
-[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_HTTP_CALLS`],
-[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
+[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_CALLOUTS_HTTP_BUFFERED`],
+[`HAS_CALLOUTS_HTTP_STREAMING`], [`HAS_CALLOUTS_GRPC_BUFFERED`]
+or [`HAS_CALLOUTS_GRPC_STREAMING`].
 
 
 #### `proxy_set_header_map_pairs`
@@ -804,8 +806,9 @@ Returned `status` value is:
   invalid memory address.
 
 This function is available if any of the following features is enabled:
-[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_HTTP_CALLS`],
-[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
+[`HAS_HTTP_HEADERS`], [`HAS_HTTP_WITH_BODY`], [`HAS_CALLOUTS_HTTP_BUFFERED`],
+[`HAS_CALLOUTS_HTTP_STREAMING`], [`HAS_CALLOUTS_GRPC_BUFFERED`]
+or [`HAS_CALLOUTS_GRPC_STREAMING`].
 
 
 #### `proxy_add_header_map_value`
@@ -940,7 +943,8 @@ Returned `status` value is:
   point to invalid memory address.
 
 This function is available if any of the following features is enabled:
-[`HAS_HTTP_CALLS`], [`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
+[`HAS_CALLOUTS_HTTP_BUFFERED`], [`HAS_CALLOUTS_HTTP_STREAMING`],
+[`HAS_CALLOUTS_GRPC_BUFFERED`] or [`HAS_CALLOUTS_GRPC_STREAMING`].
 
 
 ## TCP streams
@@ -1346,7 +1350,7 @@ Returned `status` value is:
   `body_size`, `serialized_trailers_data`, `serialized_trailers_size`
   and/or `return_call_id` point to invalid memory address.
 
-This function is gated on [`HAS_HTTP_CALLS`] host feature.
+This function is gated on [`HAS_CALLOUTS_HTTP_BUFFERED`] host feature.
 
 
 ### Callbacks exposed by the Wasm module
@@ -1381,7 +1385,7 @@ All `num_trailers` trailers can be retrieved using
 or individually [`proxy_get_header_map_value`]
 with `map_id` set to `HTTP_CALL_RESPONSE_TRAILERS`.
 
-This function is gated on [`HAS_HTTP_CALLS`] host feature.
+This function is gated on [`HAS_CALLOUTS_HTTP_BUFFERED`] host feature.
 
 
 ## gRPC calls
@@ -1430,7 +1434,7 @@ Returned `status` value is:
   `serialized_initial_metadata_size`, `message_data`, `message_size`
   and/or `return_call_id` point to invalid memory address.
 
-This function is gated on [`HAS_GRPC_CALLS`] host feature.
+This function is gated on [`HAS_CALLOUTS_GRPC_BUFFERED`] host feature.
 
 
 #### `proxy_grpc_stream`
@@ -1475,7 +1479,7 @@ Returned `status` value is:
   `serialized_initial_metadata_size` and/or `return_stream_id`
   point to invalid memory address.
 
-This function is gated on [`HAS_GRPC_STREAMS`] host feature.
+This function is gated on [`HAS_CALLOUTS_GRPC_STREAMING`] host feature.
 
 
 #### `proxy_grpc_send`
@@ -1498,7 +1502,7 @@ Returned `status` value is:
 - `INVALID_MEMORY_ACCESS` when `message_data` and/or `message_size`
   point to invalid memory address.
 
-This function is gated on [`HAS_GRPC_STREAMS`] host feature.
+This function is gated on [`HAS_CALLOUTS_GRPC_STREAMING`] host feature.
 
 
 #### `proxy_grpc_cancel`
@@ -1516,8 +1520,8 @@ Returned `status` value is:
 - `BAD_ARGUMENT` for invalid `call_or_stream_id`.
 - `NOT_FOUND` for unknown `call_or_stream_id`.
 
-This function is gated on [`HAS_GRPC_CALLS`] and/or [`HAS_GRPC_STREAMS`]
-host features.
+This function is available if any of the following features is enabled:
+[`HAS_CALLOUTS_GRPC_BUFFERED`] or [`HAS_CALLOUTS_GRPC_STREAMING`].
 
 
 #### `proxy_grpc_close`
@@ -1536,7 +1540,7 @@ Returned `status` value is:
 - `NOT_FOUND` for unknown `call_or_stream_id`.
 
 This function is available if any of the following features is enabled:
-[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
+[`HAS_CALLOUTS_GRPC_BUFFERED`] or [`HAS_CALLOUTS_GRPC_STREAMING`].
 
 
 ### Callbacks exposed by the Wasm module
@@ -1559,7 +1563,7 @@ All `num_elements` elements can be retrieved using
 `GRPC_CALL_INITIAL_METADATA`.
 
 This function is available if any of the following features is enabled:
-[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
+[`HAS_CALLOUTS_GRPC_BUFFERED`] or [`HAS_CALLOUTS_GRPC_STREAMING`].
 
 
 #### `proxy_on_grpc_receive`
@@ -1578,7 +1582,7 @@ Message (of `message_size`) can be retrieved using
 [`proxy_get_buffer_bytes`] with `buffer_id` set to `GRPC_CALL_MESSAGE`.
 
 This function is available if any of the following features is enabled:
-[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
+[`HAS_CALLOUTS_GRPC_BUFFERED`] or [`HAS_CALLOUTS_GRPC_STREAMING`].
 
 
 #### `proxy_on_grpc_receive_trailing_metadata`
@@ -1599,7 +1603,7 @@ All `num_elements` elements can be retrieved using
 `GRPC_CALL_TRAILING_METADATA`.
 
 This function is available if any of the following features is enabled:
-[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
+[`HAS_CALLOUTS_GRPC_BUFFERED`] or [`HAS_CALLOUTS_GRPC_STREAMING`].
 
 
 #### `proxy_on_grpc_close`
@@ -1617,7 +1621,7 @@ Called when gRPC call or stream `call_id` opened using
 gRPC status message can be retrieved using [`proxy_get_status`].
 
 This function is available if any of the following features is enabled:
-[`HAS_GRPC_CALLS`] or [`HAS_GRPC_STREAMS`].
+[`HAS_CALLOUTS_GRPC_BUFFERED`] or [`HAS_CALLOUTS_GRPC_STREAMING`].
 
 
 ## Shared Key-Value Store
@@ -2320,11 +2324,12 @@ changes to unrelated connections/requests.
 [`HAS_LOGGING`]: ./HOST_FEATURES.md
 [`HAS_HTTP_HEADERS`]: ./HOST_FEATURES.md
 [`HAS_HTTP_WITH_BODY`]: ./HOST_FEATURES.md
-[`HAS_HTTP_CALLS`]: ./HOST_FEATURES.md
-[`HAS_GRPC_CALLS`]: ./HOST_FEATURES.md
-[`HAS_GRPC_STREAMS`]: ./HOST_FEATURES.md
 [`HAS_TCP_FILTER`]: ./HOST_FEATURES.md
 [`HAS_TCP_WITH_PAYLOAD`]: ./HOST_FEATURES.md
+[`HAS_CALLOUTS_HTTP_BUFFERED`]: ./HOST_FEATURES.md
+[`HAS_CALLOUTS_HTTP_STREAMING`]: ./HOST_FEATURES.md
+[`HAS_CALLOUTS_GRPC_BUFFERED`]: ./HOST_FEATURES.md
+[`HAS_CALLOUTS_GRPC_STREAMING`]: ./HOST_FEATURES.md
 [`HAS_KEY_VALUE_STORES`]: ./HOST_FEATURES.md
 [`HAS_SHARED_QUEUES`]: ./HOST_FEATURES.md
 [`HAS_TIMERS`]: ./HOST_FEATURES.md
