@@ -1200,6 +1200,7 @@ Returned `status` value is:
 #### `proxy_http_call`
 
 * params:
+  - `i32 (uint32_t) parent_context_id`
   - `i32 (const char *) upstream_name_data`
   - `i32 (size_t) upstream_name_size`
   - `i32 (const uint8_t *) serialized_headers_data`
@@ -1217,6 +1218,9 @@ Sends HTTP request with [serialized] headers (`serialized_headers_data`,
 `serialized_headers_size`), `body`, and [serialized] trailers
 (`serialized_trailers_data`, `serialized_trailers_size`)
 to upstream (`upstream_name_data`, `upstream_name_size`).
+
+The response will be associated with `parent_context_id` (either
+`plugin_context_id` or `stream_context_id`) and bound to its lifetime.
 
 [`proxy_on_http_call_response`] will be called with `return_call_id`
 when the response is received by the host, or after the `timeout`.
@@ -1272,6 +1276,7 @@ with `map_id` set to `HTTP_CALL_RESPONSE_TRAILERS`.
 #### `proxy_grpc_call`
 
 * params:
+  - `i32 (uint32_t) parent_context_id`
   - `i32 (const char *) upstream_name_data`
   - `i32 (size_t) upstream_name_size`
   - `i32 (const char *) service_name_data`
@@ -1294,6 +1299,9 @@ to gRPC method (`method_name_data`, `method_name_size`)
 on gRPC service (`service_name_data`, `service_name_size`)
 on upstream (`upstream_name_data`, `upstream_name_size`).
 
+The response will be associated with `parent_context_id` (either
+`plugin_context_id` or `stream_context_id`) and bound to its lifetime.
+
 [`proxy_on_grpc_receive`] or [`proxy_on_grpc_close`] will be called
 with `return_call_id` when the response is received by the host, or
 after the `timeout`.
@@ -1315,6 +1323,7 @@ Returned `status` value is:
 #### `proxy_grpc_stream`
 
 * params:
+  - `i32 (uint32_t) parent_context_id`
   - `i32 (const char *) upstream_name_data`
   - `i32 (size_t) upstream_name_size`
   - `i32 (const char *) service_name_data`
@@ -1335,6 +1344,9 @@ on upstream (`upstream_name_data`, `upstream_name_size`).
 
 gRPC messages can be sent on this stream using [`proxy_grpc_send`]
 with `return_stream_id`.
+
+The response will be associated with `parent_context_id` (either
+`plugin_context_id` or `stream_context_id`) and bound to its lifetime.
 
 [`proxy_on_grpc_receive`] or [`proxy_on_grpc_close`] will be called
 with `return_stream_id` when the response is received by the host,
