@@ -41,12 +41,16 @@ which can be used to distinguish between different contexts.
 
 ### Functions exposed by the host
 
-All functions exposed by the host are required.
+All functions exposed by the host are optional, unless specified otherwise,
+and their availability is gated on advertised [host features].
 
 All Proxy-Wasm functions exposed by the host return [`proxy_status_t`],
 which indicates status of the call (success, invalid memory access,
 etc.). Return values are written into memory pointed by `return_<value>`
 parameters.
+
+Hosts are expected to return `NOT_SUPPORTED` status for functions which are
+unimplemented or unavailable due to configuration or policy.
 
 
 ## Integration
@@ -2230,6 +2234,7 @@ changes to unrelated connections/requests.
 - `CAS_MISMATCH` = `8`
 - `INTERNAL_FAILURE` = `10`
 - `UNIMPLEMENTED` = `12`
+- `NOT_SUPPORTED` = `13`
 
 
 #### `proxy_action_t`
@@ -2310,6 +2315,7 @@ changes to unrelated connections/requests.
 [memory management]: #Memory-management
 [serialized]: #Serialization
 
+[host functions]: ./HOST_FEATURES.md
 [`HAS_CORE`]: ./HOST_FEATURES.md
 [`HAS_LOGGING`]: ./HOST_FEATURES.md
 [`HAS_HTTP_HEADERS`]: ./HOST_FEATURES.md
