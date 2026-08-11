@@ -1585,6 +1585,9 @@ Returned `status` value is:
 Returns shared value (`return_value`) identified by the key (`key_data`,
 `key_value`) in key-value store `kvstore_id`.
 
+The `return_value=0` can be used to check the existence of the key
+(`key_data`, `key_value`) without retrieving its value.
+
 The compare-and-swap value (`return_cas`) can be used for atomically
 updating this value using [`proxy_set_shared_data`].
 
