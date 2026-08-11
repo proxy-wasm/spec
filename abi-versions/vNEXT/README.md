@@ -1547,7 +1547,7 @@ Returned `status` value is:
 Opens named queue (`queue_name_data`, `queue_name_size`).
 
 If `create_if_not_exist` is `true` and there is no shared queue with
-that name, then it will be created.
+the given name, then it will be created.
 
 Items can be enqueued/dequeued on the opened queue using
 [`proxy_enqueue_shared_queue`] and/or [`proxy_dequeue_shared_queue`]
