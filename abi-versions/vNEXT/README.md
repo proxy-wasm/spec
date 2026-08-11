@@ -1554,6 +1554,9 @@ Returned `status` value is:
 Sets shared data identified by the key (`key_data`, `key_value`)
 to the value (`value_data`, `value_size`) in key-value store `kvstore_id`.
 
+If the `value_data` is `0`, then the key (`key_data`, `key_size`) will be
+deleted from the shared key-value store (`kvstore_id`).
+
 If the compare-and-swap value (`cas`) is set to a non-zero value,
 then it must match the host's compare-and-swap value in order for
 the update to succeed.
