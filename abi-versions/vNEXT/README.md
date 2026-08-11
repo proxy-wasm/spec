@@ -1484,7 +1484,7 @@ gRPC status message can be retrieved using [`proxy_get_status`].
 Opens named key-value store (`kvstore_name_data`, `kvstore_name_size`).
 
 If `create_if_not_exist` is `true` and there is no shared key-value store with
-that name, then a new store will be created.
+the given name, then a new store will be created.
 
 Key's value can be set using `proxy_set_shared_data` and retrieved using
 `proxy_get_shared_data` from the key-value store using returned unique key-value
