@@ -123,26 +123,6 @@ memory.
 Returning `0` indicates failure.
 
 
-#### `malloc`
-
-* params:
-  - `i32 (size_t) memory_size`
-* returns:
-  - `i32 (uint8_t *) memory_data`
-
-> **Warning**
-> This callback has been deprecated in favor of [`proxy_on_memory_allocate`],
-> and it's called only in its absence.
-
-Called to allocate continuous memory buffer of `memory_size` using
-the in-VM memory allocator.
-
-Plugin must return `memory_data` pointing to the start of the allocated
-memory.
-
-Returning `0` indicates failure.
-
-
 ## Context lifecycle
 
 ### Callbacks exposed by the Wasm module
@@ -213,36 +193,19 @@ or after a call to [`proxy_done`].
 #### `proxy_done`
 
 * params:
-  - none
+  - `i32 (uint32_t) context_id`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Indicates to the host that the plugin is done processing active
-context.
+Indicates to the host that the plugin is done processing context
+(`context_id`).
 
 This should be used after returning `false` in [`proxy_on_done`].
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
 - `NOT_FOUND` when active context was not pending finalization.
-
-
-#### `proxy_set_effective_context`
-
-* params:
-  - `i32 (uint32_t) context_id`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-Changes the effective context to `context_id`.
-
-This can be used to change active context, e.g. during
-[`proxy_on_http_call_response`], [`proxy_on_grpc_receive`]
-and/or [`proxy_on_queue_ready`] callbacks.
-
-Returned `status` value is:
-- `OK` on success.
-- `BAD_ARGUMENT` for unknown `context_id`.
 
 
 ## Configuration
@@ -408,22 +371,68 @@ Returned `errno` value is:
 
 ## Timers
 
+> **Note**
+> The default timer can be accessed using `timer_id=0`.
+
+
 ### Functions exposed by the host
+
+#### `proxy_create_timer`
+
+* params:
+  - `i32 (uint32_t) tick_period`
+  - `i32 (bool) one_time`
+  - `i32 (uint32_t*) return_timer_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Creates a new timer.
+
+When a timer is created as a one-time alarm (`one_time`), then
+the [`proxy_on_tick`] callback will be called only once after `tick_period`
+milliseconds.
+
+Otherwise, the [`proxy_on_tick`] callback is going to be called every
+`tick_period` milliseconds until the timer is deleted using
+[`proxy_delete_timer`] with the returned unique timer identifier
+(`return_timer_id`).
+
+Returned `status` value is:
+- `OK` on success.
+- `INVALID_MEMORY_ACCESS` when `return_timer_id` points to invalid memory
+address.
+
 
 #### `proxy_set_tick_period_milliseconds`
 
 * params:
+  - `i32 (uint32_t) timer_id`
   - `i32 (uint32_t) tick_period`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sets a low-resolution timer period (`tick_period`).
+Sets a tick period (`tick_period`) in a low-resolution timer `timer_id`.
 
 When set, the host will call [`proxy_on_tick`] every `tick_period`
 milliseconds. Setting `tick_period` to `0` disables the timer.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `timer_id`.
+
+
+#### `proxy_delete_timer`
+
+* params:
+  - `i32 (uint32_t) timer_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Deletes previously created timer (`timer_id`).
+
+Returned `status` value is:
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `timer_id`.
 
 
 ### Callbacks exposed by the Wasm module
@@ -431,11 +440,11 @@ Returned `status` value is:
 #### `proxy_on_tick`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
+  - `i32 (uint32_t) timer_id`
 * returns:
   - none
 
-Called on a timer every tick period.
+Called on a timer `timer_id` every tick period.
 
 The tick period can be configured using
 [`proxy_set_tick_period_milliseconds`].
@@ -535,6 +544,7 @@ in this section is restricted to specific callbacks:
 #### `proxy_set_buffer_bytes`
 
 * params:
+  - `i32 (uint32_t) context_id`
   - `i32 (`[`proxy_buffer_type_t`]`) buffer_id`
   - `i32 (size_t) start`
   - `i32 (size_t) size`
@@ -543,8 +553,8 @@ in this section is restricted to specific callbacks:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sets content of the buffer `buffer_id` to the provided value
-(`value_data`, `value_size`) replacing `size` bytes starting
+Sets content of the buffer `buffer_id` of context `context_id` to the provided
+value (`value_data`, `value_size`) replacing `size` bytes starting
 at `start` in the existing buffer.
 
 The combination of `start` and `size` parameters can be used to perform
@@ -554,6 +564,7 @@ and replace (`start` smaller than the existing buffer size) operations.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
 - `BAD_ARGUMENT` for unknown `buffer_id`.
 - `NOT_FOUND` when the requested `buffer_id` isn't available.
 - `INVALID_MEMORY_ACCESS` when `value_data` and/or `value_size`
@@ -563,6 +574,7 @@ Returned `status` value is:
 #### `proxy_get_buffer_bytes`
 
 * params:
+  - `i32 (uint32_t) context_id`
   - `i32 (`[`proxy_buffer_type_t`]`) buffer_id`
   - `i32 (size_t) start`
   - `i32 (size_t) max_size`
@@ -572,10 +584,11 @@ Returned `status` value is:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Retrieves up to `max_size` bytes starting at `start` from the buffer
-`buffer_id`.
+`buffer_id` of context `context_id`.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
 - `BAD_ARGUMENT` for unknown `buffer_id`, or in case of buffer overflow
    due to invalid `start` and/or `max_size` values.
 - `NOT_FOUND` when the requested `buffer_id` isn't available.
@@ -586,16 +599,19 @@ Returned `status` value is:
 #### `proxy_get_buffer_status`
 
 * params:
+  - `i32 (uint32_t) context_id`
   - `i32 (`[`proxy_buffer_type_t`]`) buffer_id`
   - `i32 (size_t *) return_buffer_size`
   - `i32 (uint32_t *) return_unused`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Retrieves size (`return_buffer_size`) of the buffer `buffer_id`.
+Retrieves size (`return_buffer_size`) of the buffer `buffer_id`
+of context `context_id`.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
 - `BAD_ARGUMENT` for unknown `buffer_id`.
 - `NOT_FOUND` when the requested `buffer_id` isn't available.
 - `INVALID_MEMORY_ACCESS` when `return_buffer_size` and/or
@@ -638,16 +654,18 @@ functions in this section is restricted to specific callbacks:
 #### `proxy_get_header_map_size`
 
 * params:
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (size_t *) return_serialized_pairs_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Retrieves size (`return_serialized_pairs_size`) of all key-value pairs
-from the map `map_id`.
+from the map `map_id` of HTTP request `stream_context_id`.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `stream_context_id`.
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `return_serialized_pairs_size` points to
   invalid memory address.
@@ -656,19 +674,22 @@ Returned `status` value is:
 #### `proxy_get_header_map_pairs`
 
 * params:
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (uint8_t **) return_serialized_pairs_data`
   - `i32 (size_t *) return_serialized_pairs_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Retrieves all key-value pairs from the map `map_id`.
+Retrieves all key-value pairs from the map `map_id` of HTTP request
+`stream_context_id`.
 
 Returned map (`return_serialized_pairs_data`,
 `return_serialized_pairs_size`) is [serialized].
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `stream_context_id`.
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `return_serialized_pairs_data` and/or
   `return_serialized_pairs_size` point to invalid memory address.
@@ -677,17 +698,20 @@ Returned `status` value is:
 #### `proxy_set_header_map_pairs`
 
 * params:
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (const uint8_t *) serialized_pairs_data`
   - `i32 (size_t) serialized_pairs_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Sets all key-value pairs in the map `map_id` to the provided
-[serialized] map (`serialized_pairs_data`, `serialized_pairs_size`).
+Sets all key-value pairs in the map `map_id` of HTTP request `stream_context_id`
+to the provided [serialized] map (`serialized_pairs_data`,
+`serialized_pairs_size`).
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `stream_context_id`.
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `serialized_pairs_data` and/or
   `serialized_pairs_size` point to invalid memory address.
@@ -696,6 +720,7 @@ Returned `status` value is:
 #### `proxy_get_header_map_value`
 
 * params:
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (const char *) key_data`
   - `i32 (size_t) key_size`
@@ -705,10 +730,12 @@ Returned `status` value is:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Retrieves value (`return_value_data`, `return_value_size`) of the key
-(`key_data`, `key_value`) from the map `map_id`.
+(`key_data`, `key_value`) from the map `map_id` of HTTP request
+`stream_context_id`.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `stream_context_id`.
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `NOT_FOUND` when the requested key was not found.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`,
@@ -719,6 +746,7 @@ Returned `status` value is:
 #### `proxy_add_header_map_value`
 
 * params:
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (const char *) key_data`
   - `i32 (size_t) key_size`
@@ -727,19 +755,21 @@ Returned `status` value is:
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Adds key (`key_data`, `key_size`) with value (`value_data`,
-`value_size`) to the map `map_id`.
+Adds key (`key_data`, `key_size`) with value (`value_data`, `value_size`)
+to the map `map_id` of HTTP request `stream_context_id`.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `stream_context_id`.
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`, `value_data`
   and/or `value_size` point to invalid memory address.
 
 
-#### `proxy_replace_header_map_value`
+#### `proxy_set_header_map_value`
 
 * params:
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (`[`proxy_map_type_t`]`) map_id`
   - `i32 (const char *) key_data`
   - `i32 (size_t) key_size`
@@ -749,31 +779,18 @@ Returned `status` value is:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Adds or replaces key's (`key_data`, `key_value`) value with the provided
-value (`value_data`, `value_size`) in the map `map_id`.
+value (`value_data`, `value_size`) in the map `map_id` of HTTP request
+`stream_context_id`.
+
+If the `value_data` is `0`, then the key (`key_data`, `key_size`) will be
+removed from the map `map_id`.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `stream_context_id`.
 - `BAD_ARGUMENT` for unknown `map_id`.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`, `value_data`
   and/or `value_size` point to invalid memory address.
-
-
-#### `proxy_remove_header_map_value`
-
-* params:
-  - `i32 (`[`proxy_map_type_t`]`) map_id`
-  - `i32 (const char *) key_data`
-  - `i32 (size_t) key_size`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-Removes the key (`key_data`, `key_value`) from the map `map_id`.
-
-Returned `status` value is:
-- `OK` on success (including the case when the requested key didn't exist).
-- `BAD_ARGUMENT` for unknown `map_id`.
-- `INVALID_MEMORY_ACCESS` when `key_data` and/or `key_size` point to
-  invalid memory address.
 
 
 ## Common HTTP and TCP stream operations
@@ -783,14 +800,16 @@ Returned `status` value is:
 #### `proxy_continue_stream`
 
 * params:
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (`[`proxy_stream_type_t`]`) stream_type`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Resumes processing of paused `stream_type`.
+Resumes processing of paused `stream_type` in stream `stream_context_id`.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `stream_context_id`.
 - `BAD_ARGUMENT` for unknown `stream_type`.
 - `UNIMPLEMENTED` when continuation of the requested `stream_type`
   is not supported.
@@ -799,20 +818,23 @@ Returned `status` value is:
 #### `proxy_close_stream`
 
 * params:
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (`[`proxy_stream_type_t`]`) stream_type`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Closes or resets `stream_type`.
+Closes or resets `stream_type` in stream `stream_context_id`.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `stream_context_id`.
 - `BAD_ARGUMENT` for unknown `stream_type`.
 
 
 #### `proxy_get_status`
 
 * params:
+  - `i32 (uint32_t) call_or_stream_id`
   - `i32 (uint32_t *) return_status_code`
   - `i32 (const char **) return_status_message_data`
   - `i32 (size_t *) return_status_message_size`
@@ -820,12 +842,14 @@ Returned `status` value is:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Retrieves status code (`return_status_code`) and status message
-(`return_status_message_data`, `return_status_message_size`) of
-the HTTP call when called from [`proxy_on_http_call_response`]
-or gRPC stream or call when called from [`proxy_on_grpc_close`].
+(`return_status_message_data`, `return_status_message_size`) of the HTTP call
+`call_or_stream_id` when called from [`proxy_on_http_call_response`]
+or gRPC stream or call `call_or_stream_id` when called from
+[`proxy_on_grpc_close`].
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `call_or_stream_id`.
 - `INVALID_MEMORY_ACCESS` when `return_status_code`,
   `return_status_message_data` and/or `return_status_message_size`
   point to invalid memory address.
@@ -969,9 +993,8 @@ All HTTP request headers can be retrieved and/or modified using
 with `map_id` set to `HTTP_REQUEST_HEADERS`.
 
 Individual HTTP request headers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`],
-[`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
-with `map_id` set to `HTTP_REQUEST_HEADERS`.
+[`proxy_get_header_map_value`], [`proxy_set_header_map_value`] and/or
+[`proxy_add_header_map_value`] with `map_id` set to `HTTP_REQUEST_HEADERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
@@ -1031,9 +1054,8 @@ All HTTP request trailers can be retrieved and/or modified using
 with `map_id` set to `HTTP_REQUEST_TRAILERS`.
 
 Individual HTTP request trailers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`],
-[`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
-with `map_id` set to `HTTP_REQUEST_TRAILERS`.
+[`proxy_get_header_map_value`], [`proxy_set_header_map_value`] and/or
+[`proxy_add_header_map_value`] with `map_id` set to `HTTP_REQUEST_TRAILERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
@@ -1065,9 +1087,8 @@ All HTTP response headers can be retrieved and/or modified using
 with `map_id` set to `HTTP_RESPONSE_HEADERS`.
 
 Individual headers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`],
-[`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
-with `map_id` set to `HTTP_RESPONSE_HEADERS`.
+[`proxy_get_header_map_value`], [`proxy_set_header_map_value`] and/or
+[`proxy_add_header_map_value`] with `map_id` set to `HTTP_RESPONSE_HEADERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
@@ -1124,9 +1145,8 @@ All HTTP response trailers can be retrieved and/or modified using
 with `map_id` set to `HTTP_RESPONSE_TRAILERS`.
 
 Individual trailers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`],
-[`proxy_add_header_map_value`] and/or [`proxy_remove_header_map_value`]
-with `map_id` set to `HTTP_RESPONSE_TRAILERS`.
+[`proxy_get_header_map_value`], [`proxy_set_header_map_value`] and/or
+[`proxy_add_header_map_value`] with `map_id` set to `HTTP_RESPONSE_TRAILERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
 or closed using [`proxy_close_stream`] with `stream_type` set to
@@ -1142,6 +1162,7 @@ Plugin must return one of the following values:
 #### `proxy_send_local_response`
 
 * params:
+  - `i32 (uint32_t) stream_context_id`
   - `i32 (uint32_t) status_code`
   - `i32 (const char *) status_code_details_data`
   - `i32 (size_t) status_code_details_size`
@@ -1155,12 +1176,13 @@ Plugin must return one of the following values:
 
 Sends HTTP response with body (`body_data`, `body_size`) and
 [serialized] headers (`serialized_headers_data`,
-`serialized_headers_size`).
+`serialized_headers_size`) for HTTP request `stream_context_id`.
 
 This can be used as long as HTTP response headers were not sent downstream.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `stream_context_id`.
 - `INVALID_MEMORY_ACCESS` when `status_code_details_data`,
   `status_code_details_size`, `body_data`, `body_size`,
   `serialized_headers_data` and/or `serialized_headers_size`
@@ -1174,6 +1196,7 @@ Returned `status` value is:
 #### `proxy_http_call`
 
 * params:
+  - `i32 (uint32_t) parent_context_id`
   - `i32 (const char *) upstream_name_data`
   - `i32 (size_t) upstream_name_size`
   - `i32 (const uint8_t *) serialized_headers_data`
@@ -1191,6 +1214,9 @@ Sends HTTP request with [serialized] headers (`serialized_headers_data`,
 `serialized_headers_size`), `body`, and [serialized] trailers
 (`serialized_trailers_data`, `serialized_trailers_size`)
 to upstream (`upstream_name_data`, `upstream_name_size`).
+
+The response will be associated with `parent_context_id` (either
+`plugin_context_id` or `stream_context_id`) and bound to its lifetime.
 
 [`proxy_on_http_call_response`] will be called with `return_call_id`
 when the response is received by the host, or after the `timeout`.
@@ -1211,7 +1237,6 @@ Returned `status` value is:
 #### `proxy_on_http_call_response`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (size_t) status_code`
   - `i32 (size_t) body_size`
@@ -1251,6 +1276,7 @@ The presence of trailers is indicated by `has_trailers=1`.
 #### `proxy_grpc_call`
 
 * params:
+  - `i32 (uint32_t) parent_context_id`
   - `i32 (const char *) upstream_name_data`
   - `i32 (size_t) upstream_name_size`
   - `i32 (const char *) service_name_data`
@@ -1273,6 +1299,9 @@ to gRPC method (`method_name_data`, `method_name_size`)
 on gRPC service (`service_name_data`, `service_name_size`)
 on upstream (`upstream_name_data`, `upstream_name_size`).
 
+The response will be associated with `parent_context_id` (either
+`plugin_context_id` or `stream_context_id`) and bound to its lifetime.
+
 [`proxy_on_grpc_receive`] or [`proxy_on_grpc_close`] will be called
 with `return_call_id` when the response is received by the host, or
 after the `timeout`.
@@ -1294,6 +1323,7 @@ Returned `status` value is:
 #### `proxy_grpc_stream`
 
 * params:
+  - `i32 (uint32_t) parent_context_id`
   - `i32 (const char *) upstream_name_data`
   - `i32 (size_t) upstream_name_size`
   - `i32 (const char *) service_name_data`
@@ -1314,6 +1344,9 @@ on upstream (`upstream_name_data`, `upstream_name_size`).
 
 gRPC messages can be sent on this stream using [`proxy_grpc_send`]
 with `return_stream_id`.
+
+The response will be associated with `parent_context_id` (either
+`plugin_context_id` or `stream_context_id`) and bound to its lifetime.
 
 [`proxy_on_grpc_receive`] or [`proxy_on_grpc_close`] will be called
 with `return_stream_id` when the response is received by the host,
@@ -1350,7 +1383,7 @@ Sends gRPC message (`message_data`, `message_size`) on the gRPC stream
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for invalid `stream_id`.
-- `NOT_FOUND` for unknown `stream_id`.
+- `UNKNOWN_RESOURCE_ID` for unknown `stream_id`.
 - `INVALID_MEMORY_ACCESS` when `message_data` and/or `message_size`
   point to invalid memory address.
 
@@ -1368,7 +1401,7 @@ Cancels `call_or_stream_id` previously started using
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for invalid `call_or_stream_id`.
-- `NOT_FOUND` for unknown `call_or_stream_id`.
+- `UNKNOWN_RESOURCE_ID` for unknown `call_or_stream_id`.
 
 
 #### `proxy_grpc_close`
@@ -1384,7 +1417,7 @@ Closes `call_or_stream_id` previously started using
 Returned `status` value is:
 - `OK` on success.
 - `BAD_ARGUMENT` for invalid `call_or_stream_id`.
-- `NOT_FOUND` for unknown `call_or_stream_id`.
+- `UNKNOWN_RESOURCE_ID` for unknown `call_or_stream_id`.
 
 
 ### Callbacks exposed by the Wasm module
@@ -1392,7 +1425,6 @@ Returned `status` value is:
 #### `proxy_on_grpc_receive_initial_metadata`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
 * returns:
   - none
@@ -1408,7 +1440,6 @@ or individually using [`proxy_get_header_map_value`] with `map_id` set to
 #### `proxy_on_grpc_receive`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (size_t) message_size`
 * returns:
@@ -1424,7 +1455,6 @@ Message (of `message_size`) can be retrieved using
 #### `proxy_on_grpc_receive_trailing_metadata`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
 * returns:
   - none
@@ -1440,7 +1470,6 @@ or individually using [`proxy_get_header_map_value`] with `map_id` set to
 #### `proxy_on_grpc_close`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (uint32_t) status_code`
 * returns:
@@ -1454,11 +1483,44 @@ gRPC status message can be retrieved using [`proxy_get_status`].
 
 ## Shared Key-Value Store
 
+> **Note**
+> The default pre-opened key-value store can be accessed using `kvstore_id=0`.
+
+
 ### Functions exposed by the host
+
+#### `proxy_open_kvstore`
+
+* params:
+  - `i32 (const char*) kvstore_name_data`
+  - `i32 (size_t) kvstore_name_size`
+  - `i32 (bool) create_if_not_exist`
+  - `i32 (uint32_t*) return_kvstore_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Opens named key-value store (`kvstore_name_data`, `kvstore_name_size`).
+
+If `create_if_not_exist` is `true` and there is no shared key-value store with
+the given name, then a new store will be created.
+
+Key's value can be set using `proxy_set_shared_data` and retrieved using
+`proxy_get_shared_data` from the key-value store using returned unique key-value
+store identifier (`return_kvstore_id`).
+
+Returned `status` value is:
+- `OK` on success when opening existing key-value store.
+- `CREATED` on success when a key-value store with the given name was created.
+- `NOT_FOUND` when `create_if_not_exist` is `false` and no shared key-value
+  store with the given name exists.
+- `INVALID_MEMORY_ACCESS` when `kvstore_name_data`, `kvstore_name_size`
+  and/or `return_kvstore_id` point to invalid memory address.
+
 
 #### `proxy_set_shared_data`
 
 * params:
+  - `i32 (uint32_t) kvstore_id`
   - `i32 (const char *) key_data`
   - `i32 (size_t) key_size`
   - `i32 (const uint8_t *) value_data`
@@ -1468,7 +1530,10 @@ gRPC status message can be retrieved using [`proxy_get_status`].
   - `i32 (`[`proxy_status_t`]`) status`
 
 Sets shared data identified by the key (`key_data`, `key_value`)
-to the value (`value_data`, `value_size`).
+to the value (`value_data`, `value_size`) in key-value store `kvstore_id`.
+
+If the `value_data` is `0`, then the key (`key_data`, `key_size`) will be
+deleted from the shared key-value store (`kvstore_id`).
 
 If the compare-and-swap value (`cas`) is set to a non-zero value,
 then it must match the host's compare-and-swap value in order for
@@ -1476,6 +1541,7 @@ the update to succeed.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `kvstore_id`.
 - `CAS_MISMATCH` when `cas` doesn't match host's compare-and-swap
   value.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`, `value_data`,
@@ -1485,6 +1551,7 @@ Returned `status` value is:
 #### `proxy_get_shared_data`
 
 * params:
+  - `i32 (uint32_t) kvstore_id`
   - `i32 (const char *) key_data`
   - `i32 (size_t) key_size`
   - `i32 (uint8_t **) return_value_data`
@@ -1494,68 +1561,69 @@ Returned `status` value is:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Returns shared value (`return_value`) identified by the key (`key_data`,
-`key_value`).
+`key_value`) in key-value store `kvstore_id`.
+
+The `return_value=0` can be used to check the existence of the key
+(`key_data`, `key_value`) without retrieving its value.
 
 The compare-and-swap value (`return_cas`) can be used for atomically
 updating this value using [`proxy_set_shared_data`].
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `kvstore_id`.
 - `NOT_FOUND` when the requested key was not found.
 - `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`,
   `return_value_data`, `return_value_size` and/or `return_cas`
   point to invalid memory address.
 
 
-## Shared Queues
-
-### Functions exposed by the host
-
-#### `proxy_register_shared_queue`
+#### `proxy_delete_kvstore`
 
 * params:
-  - `i32 (const char *) name_data`
-  - `i32 (size_t) name_size`
-  - `i32 (uint32_t *) return_queue_id`
+  - `i32 (uint32_t) kvstore_id`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Registers shared queue under a name (`name_data`, `name_size`).
-
-If the named queue already exists, then it's going to be opened
-instead of creating a new empty queue.
-
-Items can be enqueued/dequeued on the created/opened queue using
-[`proxy_enqueue_shared_queue`] and/or [`proxy_dequeue_shared_queue`]
-with `return_queue_id`.
+Deletes previously created shared key-value store (`kvstore_id`).
 
 Returned `status` value is:
 - `OK` on success.
-- `INVALID_MEMORY_ACCESS` when `name_data`, `name_size`
-  and/or `return_queue_id` point to invalid memory address.
+- `UNKNOWN_RESOURCE_ID` for unknown `kvstore_id`.
 
 
-#### `proxy_resolve_shared_queue`
+## Shared Queues
+
+> **Note**
+> The default pre-opened shared queue can be accessed using `queue_id=0`.
+
+
+### Functions exposed by the host
+
+#### `proxy_open_shared_queue`
 
 * params:
-  - `i32 (const char *) vm_id_data`
-  - `i32 (size_t) vm_id_size`
-  - `i32 (const char *) name_data`
-  - `i32 (size_t) name_size`
+  - `i32 (const char *) queue_name_data`
+  - `i32 (size_t) queue_name_size`
+  - `i32 (bool) create_if_not_exist`
   - `i32 (uint32_t *) return_queue_id`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Resolves existing shared queue using the provided VM ID (`vm_id_data`,
-`vm_id_size`) and name (`name_data`, `name_size`).
+Opens named queue (`queue_name_data`, `queue_name_size`).
+
+If `create_if_not_exist` is `true` and there is no shared queue with
+the given name, then it will be created.
 
 Items can be enqueued/dequeued on the opened queue using
 [`proxy_enqueue_shared_queue`] and/or [`proxy_dequeue_shared_queue`]
 with `return_queue_id`.
 
 Returned `status` value is:
-- `OK` on success.
-- `NOT_FOUND` when the requested queue was not found.
+- `OK` on success when opening existing queue.
+- `CREATED` on success when a queue with the given name was created.
+- `NOT_FOUND` when `create_if_not_exist` is `false` and no shared queue
+  with the given name exists.
 - `INVALID_MEMORY_ACCESS` when `vm_id_data`, `vm_id_size`, `name_data`,
   `name_size` and/or `return_queue_id` point to invalid memory address.
 
@@ -1574,7 +1642,7 @@ Adds item (`value_data`, `value_size`) to the end of the queue
 
 Returned `status` value is:
 - `OK` on success.
-- `NOT_FOUND` when the requested `queue_id` was not found.
+- `UNKNOWN_RESOURCE_ID` for unknown `queue_id`.
 - `INVALID_MEMORY_ACCESS` when `value_data` and/or `value_size` point
   to invalid memory address.
 
@@ -1593,17 +1661,28 @@ the front of the queue `queue_id`.
 
 Returned `status` value is:
 - `OK` on success.
-- `NOT_FOUND` when the requested `queue_id` was not found.
+- `UNKNOWN_RESOURCE_ID` for unknown `queue_id`.
 - `EMPTY` when there is nothing to dequeue from the requested queue.
 - `INVALID_MEMORY_ACCESS` when `return_value_data`
   and/or `return_value_size` point to invalid memory address.
+
+
+#### `proxy_delete_shared_queue`
+
+* params:
+  - `i32 (uint32_t) queue_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Deletes previously created shared queue (`queue_id`).
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `queue_id`.
 
 
 ### Callbacks exposed by the Wasm module
 
 #### `proxy_on_queue_ready`
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) queue_id`
 * returns:
   - none
@@ -1651,7 +1730,7 @@ Sets metric `metric_id` to the `value`.
 
 Returned `status` value is:
 - `OK` on success.
-- `NOT_FOUND` when the requested `metric_id` was not found.
+- `UNKNOWN_RESOURCE_ID` for unknown `metric_id`.
 
 
 #### `proxy_increment_metric`
@@ -1666,7 +1745,7 @@ Changes metric `metric_id` by the `delta`.
 
 Returned `status` value is:
 - `OK` on success.
-- `NOT_FOUND` when the requested `metric_id` was not found.
+- `UNKNOWN_RESOURCE_ID` for unknown `metric_id`.
 - `BAD_ARGUMENT` when the requested `delta` cannot be applied to
   `metric_id` (e.g. trying to decrement counter).
 
@@ -1683,7 +1762,7 @@ Retrieves `return_value` of the metric `metric_id`.
 
 Returned `status` value is:
 - `OK` on success.
-- `NOT_FOUND` when the requested `metric_id` was not found.
+- `UNKNOWN_RESOURCE_ID` for unknown `metric_id`.
 - `INVALID_MEMORY_ACCESS` when `return_value` points to invalid memory
   address.
 
@@ -1700,6 +1779,7 @@ Returned `status` value is:
 #### `proxy_get_property`
 
 * params:
+  - `i32 (uint32_t) context_id`
   - `i32 (const uint8_t *) path_data`
   - `i32 (size_t) path_size`
   - `i32 (uint8_t **) return_value_data`
@@ -1708,12 +1788,13 @@ Returned `status` value is:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Retrieves value (`return_value_data`, `return_value_size`)
-of the property (`path_data`, `path_size`).
+of the property (`path_data`, `path_size`) of context `context_id`.
 
 `path_data` is a [serialized] list of path segments.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
 - `NOT_FOUND` when there was no property found at the requested `path`.
 - `SERIALIZATION_FAILURE` when host failed to serialize property.
 - `INVALID_MEMORY_ACCESS` when `path_data`, `path_size`,
@@ -1724,6 +1805,7 @@ Returned `status` value is:
 #### `proxy_set_property`
 
 * params:
+  - `i32 (uint32_t) context_id`
   - `i32 (const uint8_t *) path_data`
   - `i32 (size_t) path_size`
   - `i32 (const uint8_t *) value_data`
@@ -1732,12 +1814,13 @@ Returned `status` value is:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Sets value of the property (`path_data`, `path_size`) to the provided
-value (`value_data`, `value_size`).
+value (`value_data`, `value_size`) in context `context_id`.
 
 `path_data` is a [serialized] list of path segments.
 
 Returned `status` value is:
 - `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
 - `NOT_FOUND` when there was no property found at the requested `path`.
 - `INVALID_MEMORY_ACCESS` when `path_data`, `path_size`, `value_data`
   and/or `value_size` point to invalid memory address.
@@ -2021,6 +2104,8 @@ changes to unrelated connections/requests.
 - `CAS_MISMATCH` = `8`
 - `INTERNAL_FAILURE` = `10`
 - `UNIMPLEMENTED` = `12`
+- `UNKNOWN_RESOURCE_ID` = `13`
+- `CREATED` = `14`
 
 
 #### `proxy_action_t`
@@ -2127,9 +2212,8 @@ changes to unrelated connections/requests.
 [`proxy_get_header_map_pairs`]: #proxy_get_header_map_pairs
 [`proxy_set_header_map_pairs`]: #proxy_set_header_map_pairs
 [`proxy_get_header_map_value`]: #proxy_get_header_map_value
+[`proxy_set_header_map_value`]: #proxy_set_header_map_value
 [`proxy_add_header_map_value`]: #proxy_add_header_map_value
-[`proxy_replace_header_map_value`]: #proxy_replace_header_map_value
-[`proxy_remove_header_map_value`]: #proxy_remove_header_map_value
 [`proxy_continue_stream`]: #proxy_continue_stream
 [`proxy_close_stream`]: #proxy_close_stream
 [`proxy_on_new_connection`]: #proxy_on_new_connection
@@ -2156,12 +2240,14 @@ changes to unrelated connections/requests.
 [`proxy_on_grpc_receive`]: #proxy_on_grpc_receive
 [`proxy_on_grpc_receive_trailing_metadata`]: #proxy_on_grpc_receive_trailing_metadata
 [`proxy_on_grpc_close`]: #proxy_on_grpc_close
+[`proxy_open_kvstore`]: #proxy_open_kvstore
 [`proxy_set_shared_data`]: #proxy_set_shared_data
 [`proxy_get_shared_data`]: #proxy_get_shared_data
-[`proxy_register_shared_queue`]: #proxy_register_shared_queue
-[`proxy_resolve_shared_queue`]: #proxy_resolve_shared_queue
+[`proxy_delete_kvstore`]: #proxy_delete_kvstore
+[`proxy_open_shared_queue`]: #proxy_open_shared_queue
 [`proxy_enqueue_shared_queue`]: #proxy_enqueue_shared_queue
 [`proxy_dequeue_shared_queue`]: #proxy_dequeue_shared_queue
+[`proxy_delete_shared_queue`]: #proxy_delete_shared_queue
 [`proxy_on_queue_ready`]: #proxy_on_queue_ready
 [`proxy_define_metric`]: #proxy_define_metric
 [`proxy_record_metric`]: #proxy_record_metric
