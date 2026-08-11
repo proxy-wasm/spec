@@ -1556,7 +1556,8 @@ with `return_queue_id`.
 Returned `status` value is:
 - `OK` on success when opening existing queue.
 - `CREATED` on success when a queue with the given name was created.
-- `NOT_FOUND` when the requested queue was not found.
+- `NOT_FOUND` when `create_if_not_exist` is `false` and no queue with
+  the given name exists.
 - `INVALID_MEMORY_ACCESS` when `vm_id_data`, `vm_id_size`, `name_data`,
   `name_size` and/or `return_queue_id` point to invalid memory address.
 
