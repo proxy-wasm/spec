@@ -1491,7 +1491,8 @@ Key's value can be set using `proxy_set_shared_data` and retrieved using
 store identifier (`return_kvstore_id`).
 
 Returned `status` value is:
-- `OK` on success.
+- `OK` on success when opening existing key-value store.
+- `CREATED` on success when a key-value store with the given name was created.
 - `NOT_FOUND` when `create_if_not_exist` is `false` and no shared key-value
   store with the given name exists.
 - `INVALID_MEMORY_ACCESS` when `kvstore_name_data`, `kvstore_name_size`
@@ -2089,6 +2090,7 @@ changes to unrelated connections/requests.
 - `INTERNAL_FAILURE` = `10`
 - `UNIMPLEMENTED` = `12`
 - `UNKNOWN_RESOURCE_ID` = `13`
+- `CREATED` = `14`
 
 
 #### `proxy_action_t`
