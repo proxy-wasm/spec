@@ -400,7 +400,6 @@ Returned `status` value is:
 #### `proxy_on_tick`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) timer_id`
 * returns:
   - none
@@ -1221,7 +1220,6 @@ Returned `status` value is:
 #### `proxy_on_http_call_response`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (size_t) num_headers`
   - `i32 (size_t) body_size`
@@ -1405,7 +1403,6 @@ Returned `status` value is:
 #### `proxy_on_grpc_receive_initial_metadata`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (size_t) num_elements`
 * returns:
@@ -1423,7 +1420,6 @@ All `num_elements` elements can be retrieved using
 #### `proxy_on_grpc_receive`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (size_t) message_size`
 * returns:
@@ -1439,7 +1435,6 @@ Message (of `message_size`) can be retrieved using
 #### `proxy_on_grpc_receive_trailing_metadata`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (size_t) num_elements`
 * returns:
@@ -1457,7 +1452,6 @@ All `num_elements` elements can be retrieved using
 #### `proxy_on_grpc_close`
 
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) call_id`
   - `i32 (uint32_t) status_code`
 * returns:
@@ -1632,7 +1626,6 @@ Returned `status` value is:
 
 #### `proxy_on_queue_ready`
 * params:
-  - `i32 (uint32_t) plugin_context_id`
   - `i32 (uint32_t) queue_id`
 * returns:
   - none
