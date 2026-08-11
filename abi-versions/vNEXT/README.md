@@ -982,14 +982,13 @@ or `REMOTE` peer, but this value might also be `UNKNOWN`.
 
 * params:
   - `i32 (uint32_t) stream_context_id`
-  - `i32 (size_t) num_headers`
   - `i32 (bool) end_of_stream`
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
 
 Called when HTTP request headers are received from downstream.
 
-All `num_headers` headers can be retrieved and/or modified using
+All HTTP request headers can be retrieved and/or modified using
 [`proxy_get_header_map_pairs`] and/or [`proxy_set_header_map_pairs`]
 with `map_id` set to `HTTP_REQUEST_HEADERS`.
 
@@ -1045,13 +1044,12 @@ Plugin must return one of the following values:
 
 * params:
   - `i32 (uint32_t) stream_context_id`
-  - `i32 (size_t) num_trailers`
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
 
 Called when HTTP request trailers are received from downstream.
 
-All `num_trailers` trailers can be retrieved and/or modified using
+All HTTP request trailers can be retrieved and/or modified using
 [`proxy_get_header_map_pairs`] and/or [`proxy_set_header_map_pairs`]
 with `map_id` set to `HTTP_REQUEST_TRAILERS`.
 
@@ -1075,14 +1073,16 @@ Plugin must return one of the following values:
 
 * params:
   - `i32 (uint32_t) stream_context_id`
-  - `i32 (size_t) num_headers`
+  - `i32 (size_t) status_code`
   - `i32 (bool) end_of_stream`
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
 
 Called when HTTP response headers are received from upstream.
 
-All `num_headers` headers can be retrieved and/or modified using
+The `status_code` represents the HTTP status code of the response.
+
+All HTTP response headers can be retrieved and/or modified using
 [`proxy_get_header_map_pairs`] and/or [`proxy_set_header_map_pairs`]
 with `map_id` set to `HTTP_RESPONSE_HEADERS`.
 
@@ -1135,13 +1135,12 @@ Plugin must return one of the following values:
 
 * params:
   - `i32 (uint32_t) stream_context_id`
-  - `i32 (size_t) num_trailers`
 * returns:
   - `i32 (`[`proxy_action_t`]`) action`
 
 Called when HTTP response trailers are received from upstream.
 
-All `num_trailers` trailers can be retrieved and/or modified using
+All HTTP response trailers can be retrieved and/or modified using
 [`proxy_get_header_map_pairs`] and/or [`proxy_set_header_map_pairs`]
 with `map_id` set to `HTTP_RESPONSE_TRAILERS`.
 
@@ -1239,30 +1238,34 @@ Returned `status` value is:
 
 * params:
   - `i32 (uint32_t) call_id`
-  - `i32 (size_t) num_headers`
+  - `i32 (size_t) status_code`
   - `i32 (size_t) body_size`
-  - `i32 (size_t) num_trailers`
+  - `i32 (size_t) has_trailers`
 * returns:
   - none
 
 Called when HTTP response for `call_id` sent using
 [`proxy_http_call`] is received.
 
-If `num_headers` is `0`, then the HTTP call failed.
+The `status_code` represents the HTTP status code of the response.
 
-All `num_headers` headers can be retrieved using
-[`proxy_get_header_map_pairs`]
-or individually [`proxy_get_header_map_value`]
-with `map_id` set to `HTTP_CALL_RESPONSE_HEADERS`.
+Note that `status_code=0` means the HTTP call failed.
+
+All HTTP response headers can be retrieved using
+[`proxy_get_header_map_pairs`] or individually using
+[`proxy_get_header_map_value`] with `map_id` set to
+`HTTP_CALL_RESPONSE_HEADERS`.
 
 Response body (of `body_size`) can be retrieved using
 [`proxy_get_buffer_bytes`] with `buffer_id` set to
 `HTTP_RESPONSE_BODY`.
 
-All `num_trailers` trailers can be retrieved using
-[`proxy_get_header_map_pairs`]
-or individually [`proxy_get_header_map_value`]
-with `map_id` set to `HTTP_CALL_RESPONSE_TRAILERS`.
+All HTTP response trailers can be retrieved using
+[`proxy_get_header_map_pairs`] or individually using
+[`proxy_get_header_map_value`] with `map_id` set to
+`HTTP_CALL_RESPONSE_TRAILERS`.
+
+The presence of trailers is indicated by `has_trailers=1`.
 
 
 ## gRPC calls
@@ -1422,16 +1425,14 @@ Returned `status` value is:
 
 * params:
   - `i32 (uint32_t) call_id`
-  - `i32 (size_t) num_elements`
 * returns:
   - none
 
 Called when initial gRPC metadata for `call_id` opened using
 [`proxy_grpc_call`] or [`proxy_grpc_stream`] is received.
 
-All `num_elements` elements can be retrieved using
-[`proxy_get_header_map_pairs`] or individually
-[`proxy_get_header_map_value`] with `map_id` set to
+All metadata pairs can be retrieved using [`proxy_get_header_map_pairs`]
+or individually using [`proxy_get_header_map_value`] with `map_id` set to
 `GRPC_CALL_INITIAL_METADATA`.
 
 
@@ -1454,16 +1455,14 @@ Message (of `message_size`) can be retrieved using
 
 * params:
   - `i32 (uint32_t) call_id`
-  - `i32 (size_t) num_elements`
 * returns:
   - none
 
 Called when trailing gRPC metadata for `call_id` opened using
 [`proxy_grpc_call`] or [`proxy_grpc_stream`] is received.
 
-All `num_elements` elements can be retrieved using
-[`proxy_get_header_map_pairs`] or individually
-[`proxy_get_header_map_value`] with `map_id` set to
+All metadata pairs can be retrieved using [`proxy_get_header_map_pairs`]
+or individually using [`proxy_get_header_map_value`] with `map_id` set to
 `GRPC_CALL_TRAILING_METADATA`.
 
 
