@@ -377,6 +377,32 @@ Returned `errno` value is:
 
 ### Functions exposed by the host
 
+#### `proxy_create_timer`
+
+* params:
+  - `i32 (uint32_t) tick_period`
+  - `i32 (bool) one_time`
+  - `i32 (uint32_t*) return_timer_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Creates a new timer.
+
+When a timer is created as a one-time alarm (`one_time`), then
+the [`proxy_on_tick`] callback will be called only once after `tick_period`
+milliseconds.
+
+Otherwise, the [`proxy_on_tick`] callback is going to be called every
+`tick_period` milliseconds until the timer is deleted using
+[`proxy_delete_timer`] with the returned unique timer identifier
+(`return_timer_id`).
+
+Returned `status` value is:
+- `OK` on success.
+- `INVALID_MEMORY_ACCESS` when `return_timer_id` points to invalid memory
+address.
+
+
 #### `proxy_set_tick_period_milliseconds`
 
 * params:
@@ -389,6 +415,20 @@ Sets a tick period (`tick_period`) in a low-resolution timer `timer_id`.
 
 When set, the host will call [`proxy_on_tick`] every `tick_period`
 milliseconds. Setting `tick_period` to `0` disables the timer.
+
+Returned `status` value is:
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `timer_id`.
+
+
+#### `proxy_delete_timer`
+
+* params:
+  - `i32 (uint32_t) timer_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Deletes previously created timer (`timer_id`).
 
 Returned `status` value is:
 - `OK` on success.
