@@ -1249,8 +1249,7 @@ Called when HTTP response for `call_id` sent using
 
 The `status_code` represents the HTTP status code of the response.
 
-Note that `status_code=0` means the HTTP call failed, and HTTP request
-wasn't sent to the destination.
+Note that `status_code=0` means the HTTP call failed.
 
 All HTTP response headers can be retrieved using
 [`proxy_get_header_map_pairs`] or individually using
