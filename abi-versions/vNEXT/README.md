@@ -766,7 +766,7 @@ Returned `status` value is:
   and/or `value_size` point to invalid memory address.
 
 
-#### `proxy_replace_header_map_value`
+#### `proxy_set_header_map_value`
 
 * params:
   - `i32 (uint32_t) stream_context_id`
@@ -994,7 +994,7 @@ All `num_headers` headers can be retrieved and/or modified using
 with `map_id` set to `HTTP_REQUEST_HEADERS`.
 
 Individual HTTP request headers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`] and/or
+[`proxy_get_header_map_value`], [`proxy_set_header_map_value`] and/or
 [`proxy_add_header_map_value`] with `map_id` set to `HTTP_REQUEST_HEADERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
@@ -1056,7 +1056,7 @@ All `num_trailers` trailers can be retrieved and/or modified using
 with `map_id` set to `HTTP_REQUEST_TRAILERS`.
 
 Individual HTTP request trailers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`] and/or
+[`proxy_get_header_map_value`], [`proxy_set_header_map_value`] and/or
 [`proxy_add_header_map_value`] with `map_id` set to `HTTP_REQUEST_TRAILERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
@@ -1087,7 +1087,7 @@ All `num_headers` headers can be retrieved and/or modified using
 with `map_id` set to `HTTP_RESPONSE_HEADERS`.
 
 Individual headers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`] and/or
+[`proxy_get_header_map_value`], [`proxy_set_header_map_value`] and/or
 [`proxy_add_header_map_value`] with `map_id` set to `HTTP_RESPONSE_HEADERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
@@ -1146,7 +1146,7 @@ All `num_trailers` trailers can be retrieved and/or modified using
 with `map_id` set to `HTTP_RESPONSE_TRAILERS`.
 
 Individual trailers can be retrieved and/or modified using
-[`proxy_get_header_map_value`], [`proxy_replace_header_map_value`] and/or
+[`proxy_get_header_map_value`], [`proxy_set_header_map_value`] and/or
 [`proxy_add_header_map_value`] with `map_id` set to `HTTP_RESPONSE_TRAILERS`.
 
 Paused HTTP requests can be resumed using [`proxy_continue_stream`]
@@ -2212,8 +2212,8 @@ changes to unrelated connections/requests.
 [`proxy_get_header_map_pairs`]: #proxy_get_header_map_pairs
 [`proxy_set_header_map_pairs`]: #proxy_set_header_map_pairs
 [`proxy_get_header_map_value`]: #proxy_get_header_map_value
+[`proxy_set_header_map_value`]: #proxy_set_header_map_value
 [`proxy_add_header_map_value`]: #proxy_add_header_map_value
-[`proxy_replace_header_map_value`]: #proxy_replace_header_map_value
 [`proxy_continue_stream`]: #proxy_continue_stream
 [`proxy_close_stream`]: #proxy_close_stream
 [`proxy_on_new_connection`]: #proxy_on_new_connection
