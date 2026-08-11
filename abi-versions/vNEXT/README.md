@@ -1554,7 +1554,8 @@ Items can be enqueued/dequeued on the opened queue using
 with `return_queue_id`.
 
 Returned `status` value is:
-- `OK` on success.
+- `OK` on success when opening existing queue.
+- `CREATED` on success when a queue with the given name was created.
 - `NOT_FOUND` when the requested queue was not found.
 - `INVALID_MEMORY_ACCESS` when `vm_id_data`, `vm_id_size`, `name_data`,
   `name_size` and/or `return_queue_id` point to invalid memory address.
@@ -2037,6 +2038,7 @@ changes to unrelated connections/requests.
 - `INTERNAL_FAILURE` = `10`
 - `UNIMPLEMENTED` = `12`
 - `UNKNOWN_RESOURCE_ID` = `13`
+- `CREATED` = `14`
 
 
 #### `proxy_action_t`
