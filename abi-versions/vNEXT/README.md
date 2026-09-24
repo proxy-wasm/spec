@@ -2095,8 +2095,7 @@ This function is gated on [`HAS_PROPERTIES`] host feature.
 #### `proxy_call_foreign_function`
 
 * params:
-  - `i32 (const char *) name_data`
-  - `i32 (size_t) name_size`
+  - `i32 (uint32_t) custom_function_id`
   - `i32 (const uint8_t *) arguments_data`
   - `i32 (size_t) arguments_size`
   - `i32 (uint8_t **) return_results_data`
@@ -2104,8 +2103,8 @@ This function is gated on [`HAS_PROPERTIES`] host feature.
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
-Calls registered foreign function (`name_data`, `name_size`)
-with arguments (`arguments_data`, `arguments_size`).
+Calls [custom function] `custom_function_id` with arguments
+(`arguments_data`, `arguments_size`).
 
 Return value(s) (`return_results_data`, `return_results_size`)
 are optional.
@@ -2126,12 +2125,12 @@ This function is gated on [`HAS_CUSTOM_FUNCTIONS`] host feature.
 
 * params:
   - `i32 (uint32_t) plugin_context_id`
-  - `i32 (uint32_t) function_id`
+  - `i32 (uint32_t) custom_callback_id`
   - `i32 (size_t) arguments_size`
 * returns:
   - none
 
-Called when a registered foreign callback `function_id` is called.
+Called when a [custom callback] `custom_callback_id` is called.
 
 Its arguments (of `arguments_size`) can be retrieved using
 [`proxy_get_buffer_bytes`] with `buffer_id` set to
@@ -2413,6 +2412,9 @@ changes to unrelated connections/requests.
 [`HAS_PROPERTIES`]: ./registries/HOST_FEATURES.md
 [`HAS_CUSTOM_FUNCTIONS`]: ./registries/HOST_FEATURES.md
 [`HAS_WASI_PREVIEW1_CORE`]: ./registries/HOST_FEATURES.md
+
+[custom function]: ./registries/CUSTOM_FUNCTIONS.md
+[custom callbacks]: ./registries/CUSTOM_FUNCTIONS.md
 
 [`proxy_abi_version_0_x_x`]: #proxy_abi_version_0_x_x
 [`_initialize`]: #_initialize
