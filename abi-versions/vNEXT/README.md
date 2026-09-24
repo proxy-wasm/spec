@@ -158,133 +158,17 @@ Returning `0` indicates failure.
 This function is always supported.
 
 
-## Context lifecycle
+## Plugin lifecycle
 
 ### Callbacks exposed by the Wasm module
 
-#### `proxy_on_context_create`
-
-* params:
-  - `i32 (uint32_t) context_id`
-  - `i32 (uint32_t) parent_context_id`
-* returns:
-  - none
-
-Called when the host creates a new context (`context_id`).
-
-When `parent_context_id` is `0` then a new plugin context is created,
-otherwise a new per-stream context is created and `parent_context_id`
-refers to the plugin context.
-
-This function is gated on [`HAS_CORE`] host feature.
-
-
-#### `proxy_on_done`
-
-* params:
-  - `i32 (uint32_t) context_id`
-* returns:
-  - `i32 (bool) completed`
-
-Called when the host is done processing context (`context_id`).
-
-Plugin must return one of the following values:
-- `true` to allow the host to finalize and delete context.
-- `false` to indicate that the context is still being used,
-  and that plugin is going to call [`proxy_done`] later to
-  allow the host to finalize and delete that context.
-
-This function is gated on [`HAS_CORE`] host feature.
-
-
-#### `proxy_on_log`
-
-* params:
-  - `i32 (uint32_t) context_id`
-* returns:
-  - none
-
-Called after the host is done processing context, but before
-releasing its state.
-
-This can be used e.g. for generating final log entries.
-
-It's called after `true` was returned from [`proxy_on_done`]
-or after a call to [`proxy_done`].
-
-This function is gated on [`HAS_CORE`] host feature.
-
-
-#### `proxy_on_delete`
-
-* params:
-  - `i32 (uint32_t) context_id`
-* returns:
-  - none
-
-Called when the host removes the context (`context_id`) to signal that
-the plugin should stop tracking it and remove all associated state.
-
-It's called after `true` was returned from [`proxy_on_done`]
-or after a call to [`proxy_done`].
-
-This function is gated on [`HAS_CORE`] host feature.
-
-
-### Functions exposed by the host
-
-#### `proxy_done`
-
-* params:
-  - `i32 (uint32_t) context_id`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-Indicates to the host that the plugin is done processing context
-(`context_id`).
-
-This should be used after returning `false` in [`proxy_on_done`].
-
-Returned `status` value is:
-- `OK` on success.
-- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
-- `NOT_FOUND` when active context was not pending finalization.
-
-This function is gated on [`HAS_CORE`] host feature.
-
-
-## Configuration
-
-### Callbacks exposed by the Wasm module
-
-#### `proxy_on_vm_start`
-
-* params:
-  - `i32 (uint32_t) unused`
-  - `i32 (size_t) vm_configuration_size`
-* returns:
-  - `i32 (bool) status`
-
-Called when the host starts the WebAssembly Virtual Machine.
-
-Its configuration (of `vm_configuration_size`) can be retrieved using
-[`proxy_get_buffer_bytes`] with `buffer_id` set to `VM_CONFIGURATION`.
-
-Plugin must return one of the following values:
-- `true` to indicate that the configuration was processed successfully.
-- `false` to indicate that the configuration processing failed, and that
-  this instance of WasmVM shouldn't be used.
-
-This function is gated on [`HAS_CORE`] host feature.
-
-
-#### `proxy_on_configure`
+#### `proxy_on_plugin_create`
 
 * params:
   - `i32 (uint32_t) plugin_context_id`
   - `i32 (size_t) plugin_configuration_size`
 * returns:
-  - `i32 (bool) status`
+  - `i32 (`[`proxy_status_t`]`) status`
 
 Called when the host starts the Proxy-Wasm plugin.
 
@@ -292,10 +176,101 @@ Its configuration (of `plugin_configuration_size`) can be retrieved
 using [`proxy_get_buffer_bytes`] with `buffer_id` set to
 `PLUGIN_CONFIGURATION`.
 
-Plugin must return one of the following values:
-- `true` to indicate that the configuration was processed successfully.
-- `false` to indicate that the configuration processing failed, and that
-  this instance of plugin shouldn't be used.
+Returned `status` value is:
+- `OK` on success.
+- `FAILED` when configuration processing and plugin instantiation failed.
+- `DUPLICATE_ID` for duplicate `plugin_context_id`.
+- `OUT_OF_MEMORY` to indicate that WasmVM is at capacity and that plugin
+  cannot be instantiated in this WasmVM.
+
+This function is gated on [`HAS_CORE`] host feature.
+
+
+#### `proxy_on_plugin_shutdown`
+
+* params:
+  - `i32 (uint32_t) plugin_context_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Called when the host stops the Proxy-Wasm plugin (`plugin_context_id`).
+
+Returned `status` value is:
+- `OK` to allow the host to finalize and delete context.
+- `PENDING` to indicate that the context is still being used,
+  and that plugin is going to call [`proxy_plugin_done`] later
+  to allow the host to finalize and delete that context.
+
+This function is gated on [`HAS_CORE`] host feature.
+
+
+### Functions exposed by the host
+
+#### `proxy_plugin_done`
+
+* params:
+  - `i32 (uint32_t) plugin_context_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Indicates to the host that the plugin is done processing context
+(`plugin_context_id`).
+
+This should be used after returning `false` in [`proxy_on_plugin_shutdown`].
+
+Returned `status` value is:
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `plugin_context_id`.
+- `BAD_ARGUMENT` when `plugin_context_id` was not pending finalization.
+
+This function is gated on [`HAS_CORE`] host feature.
+
+
+## Stream Context lifecycle
+
+### Callbacks exposed by the Wasm module
+
+#### `proxy_on_context_create`
+
+* params:
+  - `i32 (uint32_t) context_id`
+  - `i32 (`[`proxy_context_type_t`]`) context_type`
+  - `i32 (uint32_t) plugin_context_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Called when the host creates a new stream context (`context_id`)
+of type `context_type` for plugin (`plugin_context_id`).
+
+Returned `status` value is:
+- `OK` on success.
+- `DUPLICATE_ID` for duplicate `context_id`.
+- `BAD_ARGUMENT` for unknown `context_type`.
+- `UNKNOWN_RESOURCE_ID` for unknown `plugin_context_id`.
+- `OUT_OF_MEMORY` to indicate that WasmVM is at capacity and that new
+  stream context cannot be instantiated in this WasmVM.
+
+This function is gated on [`HAS_CORE`] host feature.
+
+
+#### `proxy_on_context_finalize`
+
+* params:
+  - `i32 (uint32_t) context_id`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Called after the host is done processing stream context (`context_id`),
+but before releasing its state.
+
+This can be used e.g. for generating final log entries.
+
+After completing this callback, plugin should stop tracking this context
+and remove all associated state.
+
+Returned `status` value is:
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
 
 This function is gated on [`HAS_CORE`] host feature.
 
@@ -606,8 +581,7 @@ in this section is restricted to specific callbacks:
 - `HTTP_CALL_RESPONSE_BODY` can be read in
   [`proxy_on_http_call_response`].
 - `GRPC_CALL_MESSAGE` can be read in [`proxy_on_grpc_receive`].
-- `VM_CONFIGURATION` can be read in [`proxy_on_vm_start`].
-- `PLUGIN_CONFIGURATION` can be read in [`proxy_on_configure`].
+- `PLUGIN_CONFIGURATION` can be read in [`proxy_on_plugin_create`].
 - `FOREIGN_FUNCTION_ARGUMENTS` can be read in
   [`proxy_on_foreign_function`].
 
@@ -702,18 +676,18 @@ This function is gated on [`HAS_CORE`] host feature.
 Access to HTTP fields (listed in [`proxy_map_type_t`]) using
 functions in this section is restricted to specific callbacks:
 
-- `HTTP_REQUEST_HEADERS` can be read in [`proxy_on_log`],
+- `HTTP_REQUEST_HEADERS` can be read in [`proxy_on_context_finalize`],
   and read and modified from [`proxy_on_request_headers`]
   (or for as long as request processing is paused from it).
-- `HTTP_REQUEST_TRAILERS` can be read in [`proxy_on_log`],
+- `HTTP_REQUEST_TRAILERS` can be read in [`proxy_on_context_finalize`],
   and read and modified in [`proxy_on_request_trailers`]
   (or for as long as request processing is paused from it).
   They can be added in [`proxy_on_request_body`], but only when the
   proxied request doesn't have trailers (`end_of_stream` is `true`).
-- `HTTP_RESPONSE_HEADERS` can be read in [`proxy_on_log`],
+- `HTTP_RESPONSE_HEADERS` can be read in [`proxy_on_context_finalize`],
   and read and modified in [`proxy_on_response_headers`]
   (or for as long as response processing is paused from it).
-- `HTTP_RESPONSE_TRAILERS` can be read in [`proxy_on_log`],
+- `HTTP_RESPONSE_TRAILERS` can be read in [`proxy_on_context_finalize`],
   and read and modified in [`proxy_on_response_trailers`]
   (or for as long as response processing is paused from it).
   They can be added in [`proxy_on_response_body`], but only when the
@@ -2325,6 +2299,10 @@ changes to unrelated connections/requests.
 - `NOT_SUPPORTED` = `12`
 - `UNKNOWN_RESOURCE_ID` = `13`
 - `CREATED` = `14`
+- `FAILED` = `15`
+- `DUPLICATE_ID` = `16`
+- `OUT_OF_MEMORY` = `17`
+- `PENDING` = `18`
 
 
 #### `proxy_action_t`
@@ -2341,7 +2319,6 @@ changes to unrelated connections/requests.
 - `UPSTREAM_DATA` = `3`
 - `HTTP_CALL_RESPONSE_BODY` = `4`
 - `GRPC_CALL_MESSAGE` = `5`
-- `VM_CONFIGURATION` = `6`
 - `PLUGIN_CONFIGURATION` = `7`
 - `FOREIGN_FUNCTION_ARGUMENTS` = `8`
 
@@ -2363,6 +2340,13 @@ changes to unrelated connections/requests.
 - `UNKNOWN` = `0`
 - `LOCAL` = `1`
 - `REMOTE` =`2`
+
+
+#### `proxy_context_type_t`
+
+- `HTTP` = `1`
+- `GRPC` = `2`
+- `TCP` = `3`
 
 
 #### `proxy_stream_type_t`
@@ -2431,14 +2415,11 @@ changes to unrelated connections/requests.
 [`_start`]: #_start
 [`proxy_on_memory_allocate`]: #proxy_on_memory_allocate
 [`malloc`]: #malloc
+[`proxy_on_plugin_create`]: #proxy_on_plugin_create
+[`proxy_on_plugin_shutdown`]: #proxy_on_plugin_shutdown
+[`proxy_plugin_done`]: #proxy_plugin_done
 [`proxy_on_context_create`]: #proxy_on_context_create
-[`proxy_on_done`]: #proxy_on_done
-[`proxy_on_log`]: #proxy_on_log
-[`proxy_on_delete`]: #proxy_on_delete
-[`proxy_done`]: #proxy_done
-[`proxy_set_effective_context`]: #proxy_set_effective_context
-[`proxy_on_vm_start`]: #proxy_on_vm_start
-[`proxy_on_configure`]: #proxy_on_configure
+[`proxy_on_context_finalize`]: #proxy_on_context_finalize
 [`proxy_log`]: #proxy_log
 [`proxy_get_log_level`]: #proxy_get_log_level
 [`proxy_get_current_time_nanoseconds`]: #proxy_get_current_time_nanoseconds
