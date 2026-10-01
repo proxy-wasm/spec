@@ -180,8 +180,10 @@ Returned `status` value is:
 - `OK` on success.
 - `FAILED` when configuration processing and plugin instantiation failed.
 - `DUPLICATE_ID` for duplicate `plugin_context_id`.
-- `OUT_OF_MEMORY` to indicate that WasmVM is at capacity and that plugin
-  cannot be instantiated in this WasmVM.
+- `REFUSED` to indicate that plugin cannot be instantiated at this time
+  (e.g. due to Wasm VM being at capacity).
+- `GOAWAY` to indicate that no new plugins will be instantiated in this
+  Wasm VM.
 
 This function is gated on [`HAS_CORE`] host feature.
 
@@ -247,8 +249,10 @@ Returned `status` value is:
 - `DUPLICATE_ID` for duplicate `context_id`.
 - `BAD_ARGUMENT` for unknown `context_type`.
 - `UNKNOWN_RESOURCE_ID` for unknown `plugin_context_id`.
-- `OUT_OF_MEMORY` to indicate that WasmVM is at capacity and that new
-  stream context cannot be instantiated in this WasmVM.
+- `REFUSED` to indicate that stream context cannot be instantiated
+  at this time (e.g. due to Wasm VM being at capacity).
+- `GOAWAY` to indicate that no new contexts will be instantiated
+  in this Wasm VM.
 
 This function is gated on [`HAS_CORE`] host feature.
 
@@ -2301,8 +2305,9 @@ changes to unrelated connections/requests.
 - `CREATED` = `14`
 - `FAILED` = `15`
 - `DUPLICATE_ID` = `16`
-- `OUT_OF_MEMORY` = `17`
+- `REFUSED` = `17`
 - `PENDING` = `18`
+- `GOAWAY` = `19`
 
 
 #### `proxy_action_t`
