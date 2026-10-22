@@ -19,6 +19,7 @@
 |   0x000F   | `HAS_METRICS`                  | When non-zero, all baseline functions for metrics are supported.                              |
 |   0x0010   | `HAS_PROPERTIES`               | When non-zero, all baseline functions for properties are supported.                           |
 |   0x0011   | `HAS_CUSTOM_FUNCTIONS`         | When non-zero, all baseline functions for custom functions are supported.                     |
+|   0x0012   | `HAS_CONTEXT_METADATA`         | When non-zero, all baseline functions for context metadata are supported.                     |
 |   0x0F01   | `HAS_WASI_PREVIEW1_CORE`       | When non-zero, all baseline functions considered essential from WASI Preview1 are supported.  |
 
 

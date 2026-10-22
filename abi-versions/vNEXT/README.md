@@ -279,6 +279,70 @@ Returned `status` value is:
 This function is gated on [`HAS_CORE`] host feature.
 
 
+### Functions exposed by the host
+
+#### `proxy_set_context_metadata`
+
+* params:
+  - `i32 (uint32_t) context_id`
+  - `i32 (const uint8_t *) key_data`
+  - `i32 (size_t) key_size`
+  - `i32 (const uint8_t *) value_data`
+  - `i32 (size_t) value_size`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Sets the opaque metadata key (`key_data`, `key_size`) to the provided opaque
+value (`value_data`, `value_size`) associated with stream context `context_id`.
+
+> **Warning**
+> This interface is expected to be used for exchanging context associated data
+> between different Proxy-Wasm plugins, and depending on the host environment,
+> also between Proxy-Wasm plugins and host's native modules and/or extensions.
+> As such, values are opaque and their format might differ for each key.
+
+Returned `status` value is:
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
+- `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`, `value_data`
+  and/or `value_size` point to invalid memory address.
+
+This function is gated on [`HAS_CONTEXT_METADATA`] host feature.
+
+
+#### `proxy_get_context_metadata`
+
+* params:
+  - `i32 (uint32_t) context_id`
+  - `i32 (const uint8_t *) key_data`
+  - `i32 (size_t) key_size`
+  - `i32 (uint8_t **) return_value_data`
+  - `i32 (size_t *) return_value_size`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Retrieves opaque value (`return_value_data`, `return_value_size`)
+of the opaque metadata key (`key_data`, `key_size`) associated with stream
+context `context_id`.
+
+> **Warning**
+> This interface is expected to be used for exchanging context associated data
+> between different Proxy-Wasm plugins, and depending on the host environment,
+> also between Proxy-Wasm plugins and host's native modules and/or extensions.
+> As such, values are opaque and their format might differ for each key.
+
+Returned `status` value is:
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
+- `NOT_FOUND` when there was no metadata found at the requested `key`.
+- `SERIALIZATION_FAILURE` when host failed to serialize metadata value.
+- `INVALID_MEMORY_ACCESS` when `key_data`, `key_size`,
+  `return_value_data` and/or `return_value_size` point to invalid
+  memory address.
+
+This function is gated on [`HAS_CONTEXT_METADATA`] host feature.
+
+
 ## Logging
 
 ### Functions exposed by the host
@@ -2425,6 +2489,8 @@ changes to unrelated connections/requests.
 [`proxy_plugin_done`]: #proxy_plugin_done
 [`proxy_on_context_create`]: #proxy_on_context_create
 [`proxy_on_context_finalize`]: #proxy_on_context_finalize
+[`proxy_set_context_metadata`]: #proxy_set_context_metadata
+[`proxy_get_context_metadata`]: #proxy_get_context_metadata
 [`proxy_log`]: #proxy_log
 [`proxy_get_log_level`]: #proxy_get_log_level
 [`proxy_get_current_time_nanoseconds`]: #proxy_get_current_time_nanoseconds
