@@ -257,6 +257,28 @@ Returned `status` value is:
 This function is gated on [`HAS_CORE`] host feature.
 
 
+#### `proxy_on_context_ready`
+
+* params:
+  - `i32 (uint32_t) context_id`
+  - `i32 (`[`proxy_context_event_t`]`) context_event`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Called when the stream context (`context_id`) changes its readiness
+for call that previously couldn't make progress and returned status
+`RETRY_WHEN_READY`.
+
+Events with dedicated callbacks won't be reported using this mechanism.
+
+Returned `status` value is:
+- `OK` on success.
+- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
+- `BAD_ARGUMENT` for unknown `context_event`.
+
+This function is gated on [`HAS_CORE`] host feature.
+
+
 #### `proxy_on_context_finalize`
 
 * params:
@@ -2308,6 +2330,7 @@ changes to unrelated connections/requests.
 - `REFUSED` = `17`
 - `PENDING` = `18`
 - `GOAWAY` = `19`
+- `RETRY_WHEN_READY` = `20`
 
 
 #### `proxy_action_t`
@@ -2352,6 +2375,12 @@ changes to unrelated connections/requests.
 - `HTTP` = `1`
 - `GRPC` = `2`
 - `TCP` = `3`
+
+
+#### `proxy_context_event_t`
+
+- `DOWNSTREAM_WRITE_READY` = `1`
+- `UPSTREAM_WRITE_READY` = `2`
 
 
 #### `proxy_stream_type_t`
@@ -2424,6 +2453,7 @@ changes to unrelated connections/requests.
 [`proxy_on_plugin_shutdown`]: #proxy_on_plugin_shutdown
 [`proxy_plugin_done`]: #proxy_plugin_done
 [`proxy_on_context_create`]: #proxy_on_context_create
+[`proxy_on_context_ready`]: #proxy_on_context_ready
 [`proxy_on_context_finalize`]: #proxy_on_context_finalize
 [`proxy_log`]: #proxy_log
 [`proxy_get_log_level`]: #proxy_get_log_level
@@ -2498,6 +2528,8 @@ changes to unrelated connections/requests.
 [`proxy_buffer_type_t`]: #proxy_buffer_type_t
 [`proxy_map_type_t`]: #proxy_map_type_t
 [`proxy_peer_type_t`]: #proxy_peer_type_t
+[`proxy_context_type_t`]: #proxy_context_type_t
+[`proxy_context_event_t`]: #proxy_context_event_t
 [`proxy_stream_type_t`]: #proxy_stream_type_t
 [`proxy_metric_type_t`]: #proxy_metric_type_t
 
