@@ -1950,21 +1950,39 @@ This function is gated on [`HAS_METRICS`] host feature.
 
 ### Functions exposed by the host
 
+#### `proxy_get_supported_properties`
+
+* params:
+  - `i32 (uint8_t **) return_serialized_properties_data`
+  - `i32 (size_t *) return_serialized_properties_size`
+* returns:
+  - `i32 (`[`proxy_status_t`]`) status`
+
+Retrieves a list of supported [properties].
+
+Returned list (`return_serialized_properties_data`,
+`return_serialized_properties_size`) is [serialized].
+
+Returned `status` value is:
+- `OK` on success.
+- `INVALID_MEMORY_ACCESS` when `return_serialized_features_data` and/or
+  `return_serialized_features_size` point to invalid memory address.
+
+This function is gated on [`HAS_PROPERTIES`] host feature.
+
+
 #### `proxy_get_property`
 
 * params:
   - `i32 (uint32_t) context_id`
-  - `i32 (const uint8_t *) path_data`
-  - `i32 (size_t) path_size`
+  - `i32 (uint32_t) property_id`
   - `i32 (uint8_t **) return_value_data`
   - `i32 (size_t *) return_value_size`
 * returns:
   - `i32 (`[`proxy_status_t`]`) status`
 
 Retrieves value (`return_value_data`, `return_value_size`)
-of the property (`path_data`, `path_size`) of context `context_id`.
-
-`path_data` is a [serialized] list of path segments.
+of the property (`property_id`) of context `context_id`.
 
 Returned `status` value is:
 - `OK` on success.
@@ -1976,116 +1994,6 @@ Returned `status` value is:
   memory address.
 
 This function is gated on [`HAS_PROPERTIES`] host feature.
-
-
-#### `proxy_set_property`
-
-* params:
-  - `i32 (uint32_t) context_id`
-  - `i32 (const uint8_t *) path_data`
-  - `i32 (size_t) path_size`
-  - `i32 (const uint8_t *) value_data`
-  - `i32 (size_t) value_size`
-* returns:
-  - `i32 (`[`proxy_status_t`]`) status`
-
-Sets value of the property (`path_data`, `path_size`) to the provided
-value (`value_data`, `value_size`) in context `context_id`.
-
-`path_data` is a [serialized] list of path segments.
-
-Returned `status` value is:
-- `OK` on success.
-- `UNKNOWN_RESOURCE_ID` for unknown `context_id`.
-- `NOT_FOUND` when there was no property found at the requested `path`.
-- `INVALID_MEMORY_ACCESS` when `path_data`, `path_size`, `value_data`
-  and/or `value_size` point to invalid memory address.
-
-This function is gated on [`HAS_PROPERTIES`] host feature.
-
-
-### Well-known properties
-
-> **Warning**
-> Properties are implementation-dependent and not stable across
-> different versions of the same host.
-> When targeting a specific host implementation (discouraged),
-> please refer to its official documentation for a complete list
-> of supported properties.
-
-
-#### Proxy-Wasm properties
-
-* `plugin_name` (string) - plugin name
-* `plugin_root_id` (string) - plugin root ID
-* `plugin_vm_id` (string) - plugin VM ID
-
-
-#### Downstream connection properties
-
-* `connection.id` (uint) - connection ID
-* `source.address` (string) - remote address
-* `source.port` (int) - remote port
-* `destination.address` (string) - local address
-* `destination.port` (int) - local port
-* `connection.tls_version` (string) - TLS version
-* `connection.requested_server_name` (string) - TLS SNI
-* `connection.mtls` (bool) - true if the TLS client certificate was validated
-* `connection.subject_local_certificate` (string) - subject of
-  the local certificate
-* `connection.subject_peer_certificate` (string) - subject of
-  the peer certificate
-* `connection.dns_san_local_certificate` (string) - first DNS entry in
-  the local certificate
-* `connection.dns_san_peer_certificate` (string) - first DNS entry in
-  the the peer certificate
-* `connection.uri_san_local_certificate` (string) - first URI entry in
-  the local certificate
-* `connection.uri_san_peer_certificate` (string) - first URI entry in
-  the peer certificate
-* `connection.sha256_peer_certificate_digest` (string) - SHA256 digest of
-  the peer certificate
-
-
-#### Upstream connection properties
-
-* `upstream.address` (string) - remote address
-* `upstream.port` (int) - remote port
-* `upstream.local_address` (string) - local address
-* `upstream.local_port` (int) - local port
-* `upstream.tls_version` (string) - TLS version
-* `upstream.subject_local_certificate` (string) - subject of
-  the local certificate
-* `upstream.subject_peer_certificate` (string) - subject of
-  the peer certificate
-* `upstream.dns_san_local_certificate` (string) - first DNS entry in
-  the local certificate
-* `upstream.dns_san_peer_certificate` (string) - first DNS entry in
-  the peer certificate
-* `upstream.uri_san_local_certificate` (string) - first URI entry in
-  the local certificate
-* `upstream.uri_san_peer_certificate` (string) - first URI entry in
-  the peer certificate
-* `upstream.sha256_peer_certificate_digest` (string) - SHA256 digest of
-  the peer certificate
-
-
-#### HTTP request properties
-
-* `request.protocol` (string) - HTTP version
-  (`HTTP/1.0`, `HTTP/1.1`, `HTTP/2`, `HTTP/3`)
-* `request.time` (timestamp) - time of the first byte received
-* `request.duration` (duration) - total duration of the HTTP request
-* `request.size` (int) - size of the HTTP request body
-* `request.total_size` (int) - total size of the HTTP request
-  (including HTTP headers and trailers)
-
-
-#### HTTP response properties
-
-* `response.size` (int) - size of the HTTP response body
-* `response.total_size` (int) - total size of the HTTP response
-  (including HTTP headers and trailers)
 
 
 ## Foreign function interface (FFI)
@@ -2200,6 +2108,16 @@ This function is never called.
 > The encoding of integers is little-endian.
 
 
+#### List of identifiers (e.g. properties)
+
+A non-empty list of identifiers is serialized as:
+- 32-bit integer containing the number of identifiers in the list,
+- a series of pairs of 32-bit identifiers
+
+An empty map may be represented either as an empty value (`size=0`), or as
+a single `0x00` byte (`size=1`).
+
+
 #### List with host features
 
 A non-empty feature list is serialized as:
@@ -2226,18 +2144,6 @@ e.g. the map `{{"a": "1"}, {"b": "22"}}` would be serialized as:
 
 An empty map may be represented either as an empty value (`size=0`), or as
 a single `0x00` byte (`size=1`).
-
-#### Property path names
-
-Path data for the [proxy_get_property] and [property_set_property] hostcalls
-consists of a sequence of path segments. The path segments are separated by
-`NULL` (`0x00`) characters.
-
-e.g. the path segments `["foo", "bar"]` would be serialized as:
--  `0x66`, `0x6f`, `0x6f`, `0x00`, `0x62`, `0x61`, `0x72`
-
-Host implementations should tolerate a `NULL` character at the end of the
-combined path data string, if present.
 
 
 # Security Considerations
@@ -2414,6 +2320,8 @@ changes to unrelated connections/requests.
 [`HAS_CUSTOM_FUNCTIONS`]: ./registries/HOST_FEATURES.md
 [`HAS_WASI_PREVIEW1_CORE`]: ./registries/HOST_FEATURES.md
 
+[properties]: ./registries/PROPERTIES.md
+
 [`proxy_abi_version_0_x_x`]: #proxy_abi_version_0_x_x
 [`_initialize`]: #_initialize
 [`main`]: #main
@@ -2478,8 +2386,8 @@ changes to unrelated connections/requests.
 [`proxy_record_metric`]: #proxy_record_metric
 [`proxy_increment_metric`]: #proxy_increment_metric
 [`proxy_get_metric`]: #proxy_get_metric
+[`proxy_get_supported_properties`]: #proxy_get_supported_properties
 [`proxy_get_property`]: #proxy_get_property
-[`proxy_set_property`]: #proxy_set_property
 [`proxy_call_foreign_function`]: #proxy_call_foreign_function
 [`proxy_on_foreign_function`]: #proxy_on_foreign_function
 
